@@ -27,15 +27,16 @@ public class ArrayStorage {
 
     void delete(String uuid) {
         int mark = 0;
-        if (size == 0 && storage[0] == null || storage[0].uuid == null) {
+        if (size == 0 || uuid == null) {
             return;
         }
         for (int i = 0; i < size; i++) {
-            if (storage[i] != null && storage[i].uuid.equals(uuid)) {
+            if (storage[i].uuid.equals(uuid)) {
                 mark = i;
             }
         }
         if (storage[mark].uuid.equals(uuid)) {
+            storage[mark] = null;
             for (int i = mark; i < size; i++) {
                 int tmp;
                 tmp = i;
@@ -60,8 +61,8 @@ public class ArrayStorage {
     int size() {
         int size = 0;
         for (Resume resume : storage) {
-            if (resume != null) {             //Проверка на null идет последовательно т.к нельзя добавлять по индексу,
-                size++;                           // и при удалений все элементы смещаются в лево,
+            if (resume != null) {                  //Проверка на null идет последовательно т.к нельзя добавлять по индексу,
+                size++;                            // и при удалений все элементы смещаются в лево,
             } else {                               // подсчет закончится при нахождений первого нулевого элемента
                 break;
             }
