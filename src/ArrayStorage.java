@@ -3,7 +3,7 @@
  */
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
-    int size = size();
+    int size = 0;
 
     void clear() {
         for (int i = 0; i < size; i++) {
@@ -26,7 +26,7 @@ public class ArrayStorage {
     }
 
     void delete(String uuid) {
-        int mark = 0;
+        int mark = -1;
         if (size == 0 || uuid == null) {
             return;
         }
@@ -35,13 +35,9 @@ public class ArrayStorage {
                 mark = i;
             }
         }
-        if (storage[mark].uuid.equals(uuid)) {
-            storage[mark] = null;
+        if (mark!=-1) {
             for (int i = mark; i < size; i++) {
-                int tmp;
-                tmp = i;
                 storage[i] = storage[i + 1];
-                storage[i + 1] = storage[tmp];
             }
             size--;
         }
@@ -57,16 +53,7 @@ public class ArrayStorage {
         }
         return allResume;
     }
-
-    int size() {
-        int size = 0;
-        for (Resume resume : storage) {
-            if (resume != null) {                  //Проверка на null идет последовательно т.к нельзя добавлять по индексу,
-                size++;                            // и при удалений все элементы смещаются в лево,
-            } else {                               // подсчет закончится при нахождений первого нулевого элемента
-                break;
-            }
-        }
+    int size(){
         return size;
     }
 }
