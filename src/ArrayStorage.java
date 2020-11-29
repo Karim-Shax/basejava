@@ -2,6 +2,7 @@
  * Array based storage for Resumes
  */
 public class ArrayStorage {
+
     Resume[] storage = new Resume[10000];
     int size = 0;
 
@@ -35,8 +36,8 @@ public class ArrayStorage {
                 mark = i;
             }
         }
-        if (mark!=-1) {
-            for (int i = mark; i < size; i++) {
+        if (mark != -1) {
+            for (int i = mark; i < size - 1; i++) {
                 storage[i] = storage[i + 1];
             }
             size--;
@@ -53,7 +54,8 @@ public class ArrayStorage {
         }
         return allResume;
     }
-    int size(){
+
+    int size() {
         return size;
     }
 }
