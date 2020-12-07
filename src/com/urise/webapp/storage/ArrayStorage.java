@@ -26,14 +26,14 @@ public class ArrayStorage {
         }
     }
 
-    public void save(Resume r) {
-        int index = checkId(r.getUuid());
+    public void save(Resume resume) {
+        int index = checkId(resume.getUuid());
         if (index == -1 && size < storage.length - 1) {
-            storage[size++] = r;
-        } else if (size == storage.length - 1) {
-            System.out.println("Array overflowed");
+            storage[size++] = resume;
         } else if (index != -1) {
-            System.out.println("Error " + r.getUuid() + " is already on the array");
+            System.out.println("Error " + resume.getUuid() + " is already on the array");
+        } else {
+            System.out.println("Array overflowed");
         }
     }
 
@@ -48,18 +48,7 @@ public class ArrayStorage {
     }
 
     //Метод проверки на наличие резюме
-    int checkId(String uuid) {
-        int index = -1;
-        if (size == 0 || uuid == null) {
-            return index;
-        }
-        for (int i = 0; i < size; i++) {
-            if (storage[i].getUuid().equals(uuid)) {
-                index = i;
-            }
-        }
-        return index;
-    }
+
 
     public void delete(String uuid) {
         int index = checkId(uuid);
@@ -70,6 +59,19 @@ public class ArrayStorage {
         } else {
             System.out.println("Error " + uuid + " not found");
         }
+    }
+
+    private int checkId(String uuid) {
+        int index = -1;
+        if (size == 0 || uuid == null) {
+            return index;
+        }
+        for (int i = 0; i < size; i++) {
+            if (storage[i].getUuid().equals(uuid)) {
+                index = i;
+            }
+        }
+        return index;
     }
 
     public Resume[] getAll() {
