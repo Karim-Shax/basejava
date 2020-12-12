@@ -1,6 +1,6 @@
-package storage;
+package com.urise.webapp.storage;
 
-import model.Resume;
+import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
 
@@ -17,7 +17,15 @@ public abstract class AbstractArrayStorage implements Storage {
         size = 0;
     }
 
-    public abstract void update(Resume resume);
+    public void update(Resume resume) {
+        int index = checkId(resume.getUuid());
+        if (index != -1) {
+            storage[index] = resume;
+            System.out.println(resume.getUuid() + " updated");
+        } else {
+            System.out.println("Error " + resume.getUuid() + " not found");
+        }
+    }
 
     public int size() {
         return size;
@@ -37,4 +45,8 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     protected abstract int checkId(String uuid);
+
+    public abstract void save(Resume resume);
+
+    public abstract void delete(String uuid);
 }

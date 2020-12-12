@@ -1,13 +1,13 @@
-package storage;
+package com.urise.webapp.storage;
 
-import model.Resume;
+import com.urise.webapp.model.Resume;
 
 /**
  * Array based storage for Resumes
  */
 public class ArrayStorage extends AbstractArrayStorage {
 
-
+    @Override
     public void save(Resume resume) {
         int index = checkId(resume.getUuid());
         if (index == -1 && size < storage.length - 1) {
@@ -19,15 +19,7 @@ public class ArrayStorage extends AbstractArrayStorage {
         }
     }
 
-    public void update(Resume resume) {
-        int index = checkId(resume.getUuid());
-        if (index != -1) {
-            storage[index] = resume;
-        } else {
-            System.out.println("Error " + resume.getUuid() + " not found");
-        }
-    }
-
+    @Override
     public void delete(String uuid) {
         int index = checkId(uuid);
         if (index != -1) {
@@ -39,6 +31,7 @@ public class ArrayStorage extends AbstractArrayStorage {
         }
     }
 
+    @Override
     protected int checkId(String uuid) {
         int index = -1;
         if (size == 0 || uuid == null) {

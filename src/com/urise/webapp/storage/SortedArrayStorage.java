@@ -1,20 +1,10 @@
-package storage;
+package com.urise.webapp.storage;
 
-import model.Resume;
+import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
 
 public class SortedArrayStorage extends AbstractArrayStorage {
-
-    @Override
-    public void update(Resume resume) {
-        int index = checkId(resume.getUuid());
-        if (index >= 0) {
-            storage[index] = resume;
-        } else {
-            System.out.println("Error " + resume.getUuid() + " not found");
-        }
-    }
 
     @Override
     public void save(Resume resume) {

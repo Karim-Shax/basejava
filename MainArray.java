@@ -1,6 +1,6 @@
-import model.Resume;
-import storage.SortedArrayStorage;
-import storage.Storage;
+import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.SortedArrayStorage;
+import com.urise.webapp.storage.Storage;
 
 import java.io.BufferedReader;
 import java.io.IOException;
