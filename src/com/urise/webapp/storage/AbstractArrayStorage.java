@@ -19,7 +19,8 @@ public abstract class AbstractArrayStorage implements Storage {
 
     public void update(Resume resume) {
         int index = checkId(resume.getUuid());
-        if (index != -1) {
+
+        if (index >= 0) {
             storage[index] = resume;
             System.out.println(resume.getUuid() + " updated");
         } else {
@@ -33,7 +34,8 @@ public abstract class AbstractArrayStorage implements Storage {
 
     public Resume get(String uuid) {
         int index = checkId(uuid);
-        if (index == -1) {
+
+        if (index < 0) {
             System.out.println("Error " + uuid + " not found");
             return null;
         }
@@ -44,9 +46,40 @@ public abstract class AbstractArrayStorage implements Storage {
         return Arrays.copyOf(storage, size);
     }
 
+
+    public void save(Resume resume) {
+        int index = checkId(resume.getUuid());
+
+        if (size == 0) {
+            storage[0] = resume;
+            size++;
+        } else if (index < 0) {
+            if (size < storage.length - 1) {
+                sortedAndSave(resume, index);
+                size++;
+            } else {
+                System.out.println("Storage overflowed");
+            }
+        } else {
+            System.out.println("Error " + resume.getUuid() + " is already on the array");
+        }
+    }
+
+    public void delete(String uuid) {
+        int index = checkId(uuid);
+
+        if (size != 0 && index >= 0) {
+            sortBeforeDelete(index);
+            storage[size - 1] = null;
+            size--;
+        } else {
+            System.out.println("Error " + uuid + " not found");
+        }
+    }
+
     protected abstract int checkId(String uuid);
 
-    public abstract void save(Resume resume);
+    protected abstract void sortBeforeDelete(int index);
 
-    public abstract void delete(String uuid);
+    protected abstract void sortedAndSave(Resume resume, int index);
 }
