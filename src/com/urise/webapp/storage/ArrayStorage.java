@@ -13,7 +13,7 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    public void sortandDelete(int index) {
+    public void sortedAndDelete(int index) {
         storage[index] = storage[size - 1];
     }
 
