@@ -67,7 +67,7 @@ public abstract class AbstractArrayStorage implements Storage {
         int index = checkId(uuid);
 
         if (size != 0 && index >= 0) {
-            insertDelete(index);
+            Delete(index);
             storage[size - 1] = null;
             size--;
         } else {
@@ -77,7 +77,7 @@ public abstract class AbstractArrayStorage implements Storage {
 
     protected abstract int checkId(String uuid);
 
-    protected abstract void insertDelete(int index);
+    protected abstract void Delete(int index);
 
     protected abstract void insertSave(Resume resume, int index);
 }
