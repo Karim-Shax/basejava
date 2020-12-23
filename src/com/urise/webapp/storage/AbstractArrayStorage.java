@@ -1,12 +1,15 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.util.Arrays;
 
 public abstract class AbstractArrayStorage implements Storage {
 
-    protected static final int STORAGE_LIMIT = 10_000;
+    protected static final int STORAGE_LIMIT = 10;
 
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
 
@@ -24,7 +27,7 @@ public abstract class AbstractArrayStorage implements Storage {
             storage[index] = resume;
             System.out.println(resume.getUuid() + " updated");
         } else {
-            System.out.println("Error " + resume.getUuid() + " not found");
+            throw new NotExistStorageException(resume.getUuid());
         }
     }
 
@@ -36,11 +39,9 @@ public abstract class AbstractArrayStorage implements Storage {
         int index = checkId(uuid);
 
         if (index >= 0) {
-
             return storage[index];
         }
-        System.out.println("Error " + uuid + " not found");
-        return null;
+        throw new NotExistStorageException(uuid);
     }
 
     public Resume[] getAll() {
@@ -56,10 +57,10 @@ public abstract class AbstractArrayStorage implements Storage {
                 insertSave(resume, index);
                 size++;
             } else {
-                System.out.println("Storage overflowed");
+                throw new StorageException("Storage overflow", resume.getUuid());
             }
         } else {
-            System.out.println("Error " + resume.getUuid() + " is already on the array");
+            throw new ExistStorageException(resume.getUuid());
         }
     }
 
@@ -71,7 +72,7 @@ public abstract class AbstractArrayStorage implements Storage {
             storage[size - 1] = null;
             size--;
         } else {
-            System.out.println("Error " + uuid + " not found");
+            throw new NotExistStorageException(uuid);
         }
     }
 
