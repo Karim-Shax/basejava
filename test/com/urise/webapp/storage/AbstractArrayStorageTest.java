@@ -79,23 +79,6 @@ public abstract class AbstractArrayStorageTest {
     }
 
     @Test
-    public void exceptionTest() {
-        try {
-
-        } catch (Exception ignored) {
-            try {
-
-            } catch (Exception ignored1) {
-                try {
-
-                } catch (Exception ignored2) {
-
-                }
-            }
-        }
-    }
-
-    @Test
     public void getExceptionTest() {
         try {
             storage.get(UUID_4);
