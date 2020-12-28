@@ -2,6 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
+import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,11 @@ public abstract class AbstractArrayStorageTest {
         assertEquals(r, storage.get(UUID_1));
     }
 
+    @Test(expected = NotExistStorageException.class)
+    public void updateExceptionTest() {
+        storage.update(new Resume(UUID_4));
+    }
+
     @Test
     public void sizeTest() {
         assertEquals(3, storage.size());
@@ -51,6 +57,11 @@ public abstract class AbstractArrayStorageTest {
     public void getTest() {
         Resume r = storage.get(UUID_1);
         assertEquals(UUID_1, r.getUuid());
+    }
+
+    @Test(expected = NotExistStorageException.class)
+    public void getUuidExceptionTest() {
+        storage.get(UUID_4);
     }
 
     @Test()
@@ -67,6 +78,11 @@ public abstract class AbstractArrayStorageTest {
         assertEquals(4, storage.size());
     }
 
+    @Test(expected = ExistStorageException.class)
+    public void saveExceptionTest() {
+        storage.save(new Resume(UUID_1));
+    }
+
     @Test(expected = NotExistStorageException.class)
     public void deleteTest() {
         storage.delete(UUID_1);
@@ -75,27 +91,21 @@ public abstract class AbstractArrayStorageTest {
     }
 
     @Test(expected = NotExistStorageException.class)
-    public void getUuidExceptionTest() {
-        storage.get(UUID_4);
-        fail("uuid4 not exist (get)");
-    }
-
-    @Test(expected = NotExistStorageException.class)
-    public void updateExceptionTest() {
-        storage.update(new Resume(UUID_4));
-        fail("resume not exist (update)");
-    }
-
-    @Test(expected = NotExistStorageException.class)
     public void deleteExceptionTest() {
         storage.delete(UUID_4);
-        fail("resume not exist (delete)");
     }
 
-    @Test(expected = ExistStorageException.class)
-    public void saveExceptionTest() {
-        storage.save(new Resume(UUID_1));
-        fail("resume already exist (save)");
+    @Test(expected = StorageException.class)
+    public void storageOverflowTest() {
+        try {
+            for (int i = storage.size() + 1; i < 11; i++) {
+                storage.save(new Resume("uuid" + i));
+            }
+        } catch (Exception ignore) {
+            fail("storage aren't overflowed");
+        }
+        storage.save(new Resume("uuid11"));
     }
+
 
 }
