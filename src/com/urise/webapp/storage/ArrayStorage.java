@@ -31,5 +31,4 @@ public class ArrayStorage extends AbstractArrayStorage {
         return index;
     }
 
-
 }
