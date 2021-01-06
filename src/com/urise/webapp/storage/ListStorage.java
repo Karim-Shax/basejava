@@ -19,47 +19,23 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public void subUpdate(Resume resume) {
-        if (resumeList.contains(resume)) {
-            int tmp = 0;
-            for (int i = 0; i < resumeList.size(); i++) {
-                if (resumeList.get(i).getUuid().equals(resume.getUuid())) {
-                    tmp = i;
-                    break;
-                }
-            }
-            resumeList.set(tmp, resume);
-        } else {
-            throw new NotExistStorageException("resume not exist");
-        }
+    public void subUpdate(int index, Resume resume) {
+        resumeList.set(index, resume);
     }
 
     @Override
-    public void subSave(Resume resume) {
-        if (!resumeList.contains(resume)) {
-            resumeList.add(resume);
-        } else {
-            throw new ExistStorageException("Resume " + resume.getUuid() + " already exist");
-        }
+    public void subSave(int index, Resume resume) {
+        resumeList.add(resume);
     }
 
     @Override
-    public Resume subGet(String uuid) {
-        for (Resume resume1 : resumeList) {
-            if (resume1.getUuid().equals(uuid)) {
-                return resume1;
-            }
-        }
-        throw new NotExistStorageException("resume not exist");
+    public Resume subGet(int index) {
+        return resumeList.get(index);
     }
 
     @Override
-    public void subDelete(String uuid) {
-        if (resumeList.contains(new Resume(uuid))) {
-            resumeList.remove(new Resume(uuid));
-        } else {
-            throw new NotExistStorageException("Resume" + uuid + " not exist");
-        }
+    public void subDelete(int index) {
+        resumeList.remove(index);
     }
 
     @Override
@@ -70,5 +46,17 @@ public class ListStorage extends AbstractStorage {
     @Override
     public int subSize() {
         return resumeList.size();
+    }
+
+    @Override
+    protected int getIndex(String uuid) {
+        if (resumeList.contains(new Resume(uuid))) {
+            for (int i = 0; i < resumeList.size(); i++) {
+                if (uuid.equals(resumeList.get(i).getUuid())) {
+                    return i;
+                }
+            }
+        }
+        return -1;
     }
 }

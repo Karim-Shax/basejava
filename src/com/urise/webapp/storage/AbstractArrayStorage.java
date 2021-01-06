@@ -1,10 +1,8 @@
 package com.urise.webapp.storage;
-
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
-
 import java.util.Arrays;
 
 public abstract class AbstractArrayStorage extends AbstractStorage {
@@ -20,15 +18,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public void subUpdate(Resume resume) {
-        int index = checkId(resume.getUuid());
-
-        if (index >= 0) {
+    public void subUpdate(int index,Resume resume) {
             storage[index] = resume;
-            System.out.println(resume.getUuid() + " updated");
-        } else {
-            throw new NotExistStorageException(resume.getUuid());
-        }
     }
 
     @Override
@@ -37,13 +28,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume subGet(String uuid) {
-        int index = checkId(uuid);
-
-        if (index >= 0) {
+    public Resume subGet(int index) {
             return storage[index];
-        }
-        throw new NotExistStorageException(uuid);
     }
 
     @Override
@@ -52,31 +38,25 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public void subSave(Resume resume) {
-        int index = checkId(resume.getUuid());
-        if (index < 0) {
+    public void subSave(int index, Resume resume) {
             if (size < storage.length) {
                 insertSave(resume, index);
                 size++;
             } else {
                 throw new StorageException("Storage overflow", resume.getUuid());
             }
-        } else {
-            throw new ExistStorageException(resume.getUuid());
-        }
     }
 
     @Override
-    public void subDelete(String uuid) {
-        int index = checkId(uuid);
+    public void subDelete(int index) {
+        delete(index);
+        storage[size - 1] = null;
+        size--;
+    }
 
-        if (size != 0 && index >= 0) {
-            delete(index);
-            storage[size - 1] = null;
-            size--;
-        } else {
-            throw new NotExistStorageException(uuid);
-        }
+    @Override
+    protected int getIndex(String uuid) {
+        return checkId(uuid);
     }
 
     protected abstract int checkId(String uuid);
