@@ -14,7 +14,7 @@ import java.io.InputStreamReader;
  */
 
 public class MainArray {
-    private final static AbstractStorage ARRAY_STORAGE = new ListStorage();
+    private final static AbstractStorage ARRAY_STORAGE = new MapStorage();
 
     public static void main(String[] args) throws IOException {
 
