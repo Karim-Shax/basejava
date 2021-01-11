@@ -26,12 +26,12 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume subGet(int index) {
+    public Resume subGet(int index, String uuid) {
         return resumeList.get(index);
     }
 
     @Override
-    public void subDelete(int index) {
+    public void subDelete(int index , String uuid) {
         resumeList.remove(index);
     }
 

@@ -26,13 +26,7 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected int getIndex(String uuid) {
-        Resume[] resumes = getAll();
-        for (int i = 0; i < resumes.length; i++) {
-            if (resumes[i].getUuid().equals(uuid)) {
-                return i;
-            }
-        }
-        return -1;
+        return resumeMap.containsKey(uuid) ? 1 : -1;
     }
 
     @Override
@@ -41,9 +35,8 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected Resume subGet(int index) {
-        Resume[] resumes = getAll();
-        return resumes[index];
+    protected Resume subGet(int index, String uuid) {
+        return resumeMap.get(uuid);
     }
 
     @Override
@@ -52,7 +45,7 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected void subDelete(int index) {
-        resumeMap.remove(subGet(index).getUuid());
+    protected void subDelete(int index, String uuid) {
+        resumeMap.remove(uuid);
     }
 }

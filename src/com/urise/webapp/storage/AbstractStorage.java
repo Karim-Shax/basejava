@@ -7,16 +7,19 @@ import com.urise.webapp.model.Resume;
 
 public abstract class AbstractStorage implements Storage {
 
+    public int containResume(String uuid) {
+        int index = getIndex(uuid);
+        if (index >= 0) {
+            return index;
+        }
+        throw new NotExistStorageException(uuid);
+    }
+
     @Override
     public void update(Resume resume) {
-        int index = getIndex(resume.getUuid());
-
-        if (index >= 0) {
-            subUpdate(index, resume);
-            System.out.println(resume.getUuid() + " updated");
-        } else {
-            throw new NotExistStorageException(resume.getUuid());
-        }
+        int index = containResume(resume.getUuid());
+        subUpdate(index, resume);
+        System.out.println(resume.getUuid() + " updated");
     }
 
     @Override
@@ -31,22 +34,14 @@ public abstract class AbstractStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        int index = getIndex(uuid);
-
-        if (index >= 0) {
-            return subGet(index);
-        }
-        throw new NotExistStorageException(uuid);
+        int index = containResume(uuid);
+        return subGet(index, uuid);
     }
 
     @Override
     public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index >= 0) {
-            subDelete(index);
-        } else {
-            throw new NotExistStorageException(uuid);
-        }
+        int index = containResume(uuid);
+        subDelete(index, uuid);
     }
 
 
@@ -54,10 +49,10 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract void subUpdate(int index, Resume resume);
 
-    protected abstract Resume subGet(int index);
+    protected abstract Resume subGet(int index, String uuid);
 
     protected abstract void subSave(int index, Resume resume);
 
-    protected abstract void subDelete(int index);
+    protected abstract void subDelete(int index, String uuid);
 
 }
