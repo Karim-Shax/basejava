@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class MapStorage extends AbstractStorage {
 
-    private Map<String, Resume> resumeMap = new HashMap<>();
+    private final Map<String, Resume> resumeMap = new HashMap<>();
 
     @Override
     public void clear() {
@@ -30,22 +30,22 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected void subUpdate(int index, Resume resume) {
-        resumeMap.put(resume.getUuid(), resume);
+    protected void subUpdate(Object uuid, Resume resume) {
+        resumeMap.put((String) uuid, resume);
     }
 
     @Override
-    protected Resume subGet(int index, String uuid) {
+    protected Resume subGet(Object uuid) {
         return resumeMap.get(uuid);
     }
 
     @Override
-    protected void subSave(int index, Resume resume) {
-        resumeMap.putIfAbsent(resume.getUuid(), resume);
+    protected void subSave(Object uuid, Resume resume) {
+        resumeMap.putIfAbsent((String) uuid, resume);
     }
 
     @Override
-    protected void subDelete(int index, String uuid) {
+    protected void subDelete(Object uuid) {
         resumeMap.remove(uuid);
     }
 }

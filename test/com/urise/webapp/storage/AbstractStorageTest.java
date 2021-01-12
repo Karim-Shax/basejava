@@ -68,13 +68,9 @@ public abstract class AbstractStorageTest {
     public void getAllTest() {
         Resume[] resumes = {new Resume(UUID_1), new Resume(UUID_2), new Resume(UUID_3)};
         assertEquals(resumes.length, storage.size());
-        int size = 0;
         for (Resume resume : resumes) {
-            if (storage.get(resume.getUuid()).equals(resume)) {
-                size++;
-            }
+            assertEquals(resume, storage.get(resume.getUuid()));
         }
-        assertEquals(size,resumes.length);
     }
 
     @Test()
@@ -101,6 +97,5 @@ public abstract class AbstractStorageTest {
     public void deleteExceptionTest() {
         storage.delete(UUID_4);
     }
-
 
 }

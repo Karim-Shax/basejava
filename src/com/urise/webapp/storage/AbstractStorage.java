@@ -7,26 +7,34 @@ import com.urise.webapp.model.Resume;
 
 public abstract class AbstractStorage implements Storage {
 
-    public int containResume(String uuid) {
-        int index = getIndex(uuid);
-        if (index >= 0) {
-            return index;
+    public Object containResume(String uuid) {
+        int key = getIndex(uuid);
+        if (key >= 0) {
+            if (this instanceof MapStorage) {
+                return uuid;
+            } else {
+                return key;
+            }
         }
         throw new NotExistStorageException(uuid);
     }
 
     @Override
     public void update(Resume resume) {
-        int index = containResume(resume.getUuid());
-        subUpdate(index, resume);
+        Object key = containResume(resume.getUuid());
+        subUpdate(key, resume);
         System.out.println(resume.getUuid() + " updated");
     }
 
     @Override
     public void save(Resume resume) {
-        int index = getIndex(resume.getUuid());
-        if (index < 0) {
-            subSave(index, resume);
+        int key = getIndex(resume.getUuid());
+        if (key < 0) {
+            if (this instanceof MapStorage) {
+                subSave(resume.getUuid(), resume);
+            } else {
+                subSave(key, resume);
+            }
         } else {
             throw new ExistStorageException(resume.getUuid());
         }
@@ -34,25 +42,25 @@ public abstract class AbstractStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        int index = containResume(uuid);
-        return subGet(index, uuid);
+        Object key = containResume(uuid);
+        return subGet(key);
     }
 
     @Override
     public void delete(String uuid) {
-        int index = containResume(uuid);
-        subDelete(index, uuid);
+        Object key = containResume(uuid);
+        subDelete(key);
     }
 
 
     protected abstract int getIndex(String uuid);
 
-    protected abstract void subUpdate(int index, Resume resume);
+    protected abstract void subUpdate(Object key, Resume resume);
 
-    protected abstract Resume subGet(int index, String uuid);
+    protected abstract Resume subGet(Object key);
 
-    protected abstract void subSave(int index, Resume resume);
+    protected abstract void subSave(Object key, Resume resume);
 
-    protected abstract void subDelete(int index, String uuid);
+    protected abstract void subDelete(Object key);
 
 }
