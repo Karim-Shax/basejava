@@ -25,8 +25,8 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected int getIndex(String uuid) {
-        return resumeMap.containsKey(uuid) ? 1 : -1;
+    protected int getKey(String uuid) {
+        return resumeMap.containsKey(uuid) ? 150 : -150;
     }
 
     @Override
