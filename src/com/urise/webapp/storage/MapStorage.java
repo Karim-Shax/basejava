@@ -25,13 +25,13 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected int getKey(String uuid) {
-        return resumeMap.containsKey(uuid) ? 150 : -150;
+    protected Object getKey(String uuid) {
+        return resumeMap.containsKey(uuid) ? uuid : null;
     }
 
     @Override
     protected void subUpdate(Object uuid, Resume resume) {
-        resumeMap.put((String) uuid, resume);
+        resumeMap.put(String.valueOf(uuid), resume);
     }
 
     @Override
@@ -41,11 +41,17 @@ public class MapStorage extends AbstractStorage {
 
     @Override
     protected void subSave(Object uuid, Resume resume) {
-        resumeMap.putIfAbsent((String) uuid, resume);
+        //здесь uuid всегда равен null
+        resumeMap.putIfAbsent(resume.getUuid(), resume);
     }
 
     @Override
     protected void subDelete(Object uuid) {
         resumeMap.remove(uuid);
+    }
+
+    @Override
+    protected boolean checkKey(Object key) {
+        return key != null;
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 public class ListStorage extends AbstractStorage {
 
-    private List<Resume> resumeList = new ArrayList<>();
+    private final List<Resume> resumeList = new ArrayList<>();
 
     @Override
     public void clear() {
@@ -46,12 +46,17 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected int getKey(String uuid) {
+    protected Object getKey(String uuid) {
         for (int i = 0; i < resumeList.size(); i++) {
             if (uuid.equals(resumeList.get(i).getUuid())) {
                 return i;
             }
         }
         return -1;
+    }
+
+    @Override
+    protected boolean checkKey(Object key) {
+        return (int) key >= 0;
     }
 }

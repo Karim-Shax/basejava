@@ -54,6 +54,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         size--;
     }
 
+    @Override
+    protected boolean checkKey(Object key) {
+        return (int) key >= 0;
+    }
+
     protected abstract void delete(int index);
 
     protected abstract void insertSave(Resume resume, int index);
