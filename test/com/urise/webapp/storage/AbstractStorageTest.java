@@ -5,7 +5,6 @@ import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -27,28 +26,28 @@ public abstract class AbstractStorageTest {
     @Before
     public void setUp() {
         storage.clear();
-        storage.save(new Resume(UUID_1));
-        storage.save(new Resume(UUID_2));
-        storage.save(new Resume(UUID_3));
+        storage.save(new Resume(UUID_1, "Aleksei"));
+        storage.save(new Resume(UUID_2, "Nikolai"));
+        storage.save(new Resume(UUID_3, "Vasili"));
     }
 
     @Test
     public void clearTest() {
         storage.clear();
         assertEquals(0, storage.size());
-        assertEquals(0, storage.getAll().length);
+        assertEquals(0, storage.getAllSortedList().size());
     }
 
     @Test()
     public void updateTest() {
-        Resume r = new Resume(UUID_1);
+        Resume r = new Resume(UUID_1, "Aleksei");
         storage.update(r);
         assertEquals(r, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
     public void updateExceptionTest() {
-        storage.update(new Resume(UUID_4));
+        storage.update(new Resume(UUID_4, "Georgi"));
     }
 
     @Test
@@ -58,7 +57,7 @@ public abstract class AbstractStorageTest {
 
     @Test()
     public void getTest() {
-        Resume r = new Resume(UUID_1);
+        Resume r = new Resume(UUID_1, "Aleksei");
         assertEquals(r, storage.get(UUID_1));
     }
 
@@ -69,20 +68,17 @@ public abstract class AbstractStorageTest {
 
     @Test()
     public void getAllTest() {
-        List<Resume> resumes= Arrays.asList(new Resume(UUID_1),new Resume(UUID_2),new Resume(UUID_3));
-        assertEquals(resumes.size(), storage.getAll().length);
-        for (Resume resume:storage.getAll()){
-            if (resumes.contains(resume)){
-
-            }else {
-                fail("resume not found");
-            }
+        List<Resume> resumes = Arrays.asList(new Resume(UUID_1, "Aleksei"), new Resume(UUID_2, "Nikolai"), new Resume(UUID_3, "Vasili"));
+        if (resumes.containsAll(storage.getAllSortedList())) {
+            System.out.println("all resume contains");
+        } else {
+            fail("not some resume");
         }
     }
 
     @Test()
     public void saveTest() {
-        Resume resume = new Resume(UUID_4);
+        Resume resume = new Resume(UUID_4,"Georgi");
         storage.save(resume);
         assertEquals(resume, storage.get(UUID_4));
         assertEquals(4, storage.size());
@@ -90,7 +86,7 @@ public abstract class AbstractStorageTest {
 
     @Test(expected = ExistStorageException.class)
     public void saveExceptionTest() {
-        storage.save(new Resume(UUID_1));
+        storage.save(new Resume(UUID_1,"Aleksei"));
     }
 
     @Test(expected = NotExistStorageException.class)

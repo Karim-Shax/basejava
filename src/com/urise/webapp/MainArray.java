@@ -7,6 +7,7 @@ import com.urise.webapp.storage.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 
 /**
  * Interactive test for com.urise.webapp.storage.ArrayStorage implementation
@@ -14,7 +15,7 @@ import java.io.InputStreamReader;
  */
 
 public class MainArray {
-    private final static AbstractStorage ARRAY_STORAGE = new ArrayStorage();
+    private final static AbstractStorage ARRAY_STORAGE = new MapStorageByFullName();
 
     public static void main(String[] args) throws IOException {
 
@@ -23,14 +24,19 @@ public class MainArray {
         while (true) {
             System.out.print("Введите одну из команд - (list | save uuid | update uuid | delete uuid | get uuid | clear | exit): ");
             String[] params = reader.readLine().trim().toLowerCase().split(" ");
-            if (params.length < 1 || params.length > 2) {
+            if (params.length < 1 || params.length > 4) {
                 System.out.println("Неверная команда.");
                 continue;
             }
             String uuid = null;
-            if (params.length == 2) {
+            String Name=null;
+            String LastName=null;
+            if (params.length == 4) {
                 uuid = params[1].intern();
+                Name = params[2].intern();
+                LastName =params[3].intern();
             }
+            String fullName=Name+" "+LastName;
             switch (params[0]) {
                 case "list":
                     printAll();
@@ -39,7 +45,7 @@ public class MainArray {
                     System.out.println(ARRAY_STORAGE.size());
                     break;
                 case "save":
-                    r = new Resume(uuid);
+                    r = new Resume(uuid,fullName);
                     ARRAY_STORAGE.save(r);
                     printAll();
                     break;
@@ -57,7 +63,7 @@ public class MainArray {
                 case "exit":
                     return;
                 case "update":
-                    Resume res = new Resume(uuid);
+                    Resume res = new Resume(uuid, fullName);
                     ARRAY_STORAGE.update(res);
                     printAll();
                     break;
@@ -69,9 +75,9 @@ public class MainArray {
     }
 
     static void printAll() {
-        Resume[] all = ARRAY_STORAGE.getAll();
+        List<Resume> all = ARRAY_STORAGE.getAllSortedList();
         System.out.println("----------------------------");
-        if (all.length == 0) {
+        if (all.size() == 0) {
             System.out.println("Empty");
         } else {
             for (Resume r : all) {
