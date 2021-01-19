@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class AbstractArrayStorage extends AbstractStorage {
 
     protected static final int STORAGE_LIMIT = 100;
-    protected Resume[] storage = new Resume[100];
+    protected Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
     @Override
@@ -35,12 +35,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSortedList() {
-        if (size == 0) {
-            return new ArrayList<>();
-        }
-        ArrayList<Resume> list = new ArrayList<>(Arrays.asList(Arrays.copyOf(storage,size)));
-        list.sort(new ResumeComparatorByFullName().thenComparing(new ResumeCompareByUUid()));
+    public List<Resume> getAll() {
+        ArrayList<Resume> list = new ArrayList<>(Arrays.asList(Arrays.copyOf(storage, size)));
         return list;
     }
 

@@ -3,8 +3,6 @@ package com.urise.webapp.storage;
 import com.urise.webapp.model.Resume;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -38,8 +36,7 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSortedList() {
-        Collections.sort(resumeList, new ResumeComparatorByFullName().thenComparing(new ResumeCompareByUUid()));
+    public List<Resume> getAll() {
         return resumeList;
     }
 
@@ -49,9 +46,9 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected Object getKey(String uuid) {
+    protected Object getKey(Resume resume) {
         for (int i = 0; i < resumeList.size(); i++) {
-            if (uuid.equals(resumeList.get(i).getUuid())) {
+            if (resume.equals(resumeList.get(i))) {
                 return i;
             }
         }

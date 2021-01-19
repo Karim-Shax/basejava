@@ -4,27 +4,39 @@ import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.Resume;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
 
 public abstract class AbstractStorage implements Storage {
 
-    public Object getKeyIfResumeExist(String uuid) {
-        Object key = getKey(uuid);
+    public Object getKeyIfResumeExist(Resume resume) {
+        Object key = getKey(resume);
         if (checkKey(key))
             return key;
         else
-            throw new NotExistStorageException(uuid);
+            throw new NotExistStorageException(resume.getFullName());
+    }
+
+    @Override
+    public List<Resume> getAllSortedList() {
+        ArrayList<Resume> list = new ArrayList<>(getAll());
+        Comparator<Resume> comparator = Comparator.comparing(Resume::getFullName).thenComparing(Resume::getUuid);
+        list.sort(comparator);
+        return list;
     }
 
     @Override
     public void update(Resume resume) {
-        Object key = getKeyIfResumeExist(resume.getUuid());
+        Object key = getKeyIfResumeExist(resume);
         subUpdate(key, resume);
         System.out.println(resume.getUuid() + " updated");
     }
 
     @Override
     public void save(Resume resume) {
-        Object key = getKey(resume.getUuid());
+        Object key = getKey(resume);
         if (!checkKey(key))
             subSave(key, resume);
         else
@@ -32,21 +44,23 @@ public abstract class AbstractStorage implements Storage {
     }
 
     @Override
-    public Resume get(String uuid) {
-        Object key = getKeyIfResumeExist(uuid);
+    public Resume get(Resume resume) {
+        Object key = getKeyIfResumeExist(resume);
         return subGet(key);
     }
 
     @Override
-    public void delete(String uuid) {
-        Object key = getKeyIfResumeExist(uuid);
+    public void delete(Resume resume) {
+        Object key = getKeyIfResumeExist(resume);
         subDelete(key);
     }
 
 
+    protected abstract List<Resume> getAll();
+
     protected abstract boolean checkKey(Object key);
 
-    protected abstract Object getKey(String uuid);
+    protected abstract Object getKey(Resume uuid);
 
     protected abstract void subUpdate(Object key, Resume resume);
 
@@ -55,6 +69,4 @@ public abstract class AbstractStorage implements Storage {
     protected abstract void subSave(Object key, Resume resume);
 
     protected abstract void subDelete(Object key);
-
-
 }

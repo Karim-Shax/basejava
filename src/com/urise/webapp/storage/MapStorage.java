@@ -6,7 +6,7 @@ import java.util.*;
 
 public class MapStorage extends AbstractStorage {
 
-    protected final Map<String, Resume> resumeMap = new HashMap<>();
+    private final Map<Object, Resume> resumeMap = new HashMap<>();
 
     @Override
     public void clear() {
@@ -14,41 +14,39 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSortedList() {
-        ArrayList<Resume> list = new ArrayList<>(resumeMap.values());
-        Collections.sort(list, new ResumeComparatorByFullName().thenComparing(new ResumeCompareByUUid()));
-        return list;
+    protected List<Resume> getAll() {
+        return new ArrayList<>(this.resumeMap.values());
     }
 
     @Override
     public int size() {
-        return resumeMap.size();
+        return this.resumeMap.size();
     }
 
     @Override
-    protected Object getKey(String uuid) {
-        return resumeMap.containsKey(uuid) ? uuid : null;
+    protected Object getKey(Resume resume) {
+        return this.resumeMap.containsKey(resume.getUuid()) ? resume.getUuid() : null;
     }
 
     @Override
     protected void subUpdate(Object uuid, Resume resume) {
-        resumeMap.put(String.valueOf(uuid), resume);
+        this.resumeMap.put(String.valueOf(uuid), resume);
     }
 
     @Override
     protected Resume subGet(Object uuid) {
-        return resumeMap.get(uuid);
+        return this.resumeMap.get(uuid);
     }
 
     @Override
     protected void subSave(Object uuid, Resume resume) {
         //здесь uuid всегда равен null
-        resumeMap.putIfAbsent(resume.getUuid(), resume);
+        this.resumeMap.putIfAbsent(resume.getUuid(), resume);
     }
 
     @Override
     protected void subDelete(Object uuid) {
-        resumeMap.remove(uuid);
+        this.resumeMap.remove(uuid);
     }
 
     @Override

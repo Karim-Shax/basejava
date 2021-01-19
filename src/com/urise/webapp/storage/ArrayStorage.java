@@ -18,13 +18,13 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected Object getKey(String uuid) {
+    protected Object getKey(Resume resume) {
         int index = -1;
-        if (size == 0 || uuid == null) {
+        if (size == 0 || resume == null) {
             return index;
         }
         for (int i = 0; i < size; i++) {
-            if (storage[i].getUuid().equals(uuid)) {
+            if (storage[i].equals(resume)) {
                 index = i;
             }
         }
