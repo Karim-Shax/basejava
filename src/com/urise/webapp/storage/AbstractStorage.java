@@ -11,12 +11,12 @@ import java.util.List;
 
 public abstract class AbstractStorage implements Storage {
 
-    public Object getKeyIfResumeExist(Resume resume) {
-        Object key = getKey(resume);
+    public Object getKeyIfResumeExist(String uuid) {
+        Object key = getKey(uuid);
         if (checkKey(key))
             return key;
         else
-            throw new NotExistStorageException(resume.getFullName());
+            throw new NotExistStorageException(uuid);
     }
 
     @Override
@@ -29,14 +29,14 @@ public abstract class AbstractStorage implements Storage {
 
     @Override
     public void update(Resume resume) {
-        Object key = getKeyIfResumeExist(resume);
+        Object key = getKeyIfResumeExist(resume.getUuid());
         subUpdate(key, resume);
         System.out.println(resume.getUuid() + " updated");
     }
 
     @Override
     public void save(Resume resume) {
-        Object key = getKey(resume);
+        Object key = getKey(resume.getUuid());
         if (!checkKey(key))
             subSave(key, resume);
         else
@@ -44,14 +44,14 @@ public abstract class AbstractStorage implements Storage {
     }
 
     @Override
-    public Resume get(Resume resume) {
-        Object key = getKeyIfResumeExist(resume);
+    public Resume get(String uuid) {
+        Object key = getKeyIfResumeExist(uuid);
         return subGet(key);
     }
 
     @Override
-    public void delete(Resume resume) {
-        Object key = getKeyIfResumeExist(resume);
+    public void delete(String uuid) {
+        Object key = getKeyIfResumeExist(uuid);
         subDelete(key);
     }
 
@@ -60,7 +60,7 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract boolean checkKey(Object key);
 
-    protected abstract Object getKey(Resume uuid);
+    protected abstract Object getKey(String uuid);
 
     protected abstract void subUpdate(Object key, Resume resume);
 

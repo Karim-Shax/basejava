@@ -7,9 +7,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.Assert.*;
+
+import java.util.List;
 
 public abstract class AbstractStorageTest {
 
@@ -42,7 +43,7 @@ public abstract class AbstractStorageTest {
     @Test()
     public void updateTest() {
         storage.update(RESUME_1);
-        assertEquals(RESUME_1, storage.get(RESUME_1));
+        assertEquals(RESUME_1, storage.get(RESUME_1.getUuid()));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -57,28 +58,24 @@ public abstract class AbstractStorageTest {
 
     @Test()
     public void getTest() {
-        assertEquals(RESUME_1, storage.get(RESUME_1));
+        assertEquals(RESUME_1, storage.get(RESUME_1.getUuid()));
     }
 
     @Test(expected = NotExistStorageException.class)
     public void getUuidExceptionTest() {
-        storage.get(RESUME_4);
+        storage.get(RESUME_4.getUuid());
     }
 
     @Test()
     public void getAllTest() {
         List<Resume> resumes = Arrays.asList(RESUME_1, RESUME_2, RESUME_3);
-        if (resumes.containsAll(storage.getAllSortedList())) {
-            System.out.println("all resume contains");
-        } else {
-            fail("not some resume");
-        }
+        assertEquals(resumes, storage.getAllSortedList());
     }
 
     @Test()
     public void saveTest() {
         storage.save(RESUME_4);
-        assertEquals(RESUME_4, storage.get(RESUME_4));
+        assertEquals(RESUME_4, storage.get(RESUME_4.getUuid()));
         assertEquals(4, storage.size());
     }
 
@@ -89,14 +86,14 @@ public abstract class AbstractStorageTest {
 
     @Test(expected = NotExistStorageException.class)
     public void deleteTest() {
-        storage.delete(RESUME_1);
+        storage.delete(RESUME_1.getUuid());
         assertEquals(2, storage.size());
-        storage.get(RESUME_1);
+        storage.get(RESUME_1.getUuid());
     }
 
     @Test(expected = NotExistStorageException.class)
     public void deleteExceptionTest() {
-        storage.delete(RESUME_4);
+        storage.delete(RESUME_4.getUuid());
     }
 
 }

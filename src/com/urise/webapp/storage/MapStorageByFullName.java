@@ -2,58 +2,40 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
 
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class MapStorageByFullName extends MapStorage {
 
-    protected final Map<Resume, Resume> resumeMap = new HashMap<>();
-
     @Override
-    public void clear() {
-        this.resumeMap.clear();
+    protected Object getKey(String uuid) {
+        for (Resume resume:resumeMap.values()){
+            if (uuid.equals(resume.getUuid())){
+                return resume;
+            }
+        }
+        return null;
     }
 
     @Override
-    protected List<Resume> getAll() {
-        return new ArrayList<>(this.resumeMap.values());
-    }
-
-    @Override
-    protected Object getKey(Resume resume) {
-        return this.resumeMap.containsKey(resume) ? resume : null;
-    }
-
-    @Override
-    protected void subUpdate(Object key, Resume resume) {
-        this.resumeMap.put((Resume) key, resume);
-    }
-
-    @Override
-    protected void subSave(Object key, Resume resume) {
-        this.resumeMap.putIfAbsent(resume, resume);
-    }
-
-    @Override
-    protected void subDelete(Object uuid) {
-        this.resumeMap.remove(uuid);
-    }
-
-    @Override
-    public int size() {
-        return this.resumeMap.size();
+    protected void subUpdate(Object uuid, Resume resume) {
+        Resume resume1=(Resume)uuid;
+        this.resumeMap.put(resume1.getUuid(), resume);
     }
 
     @Override
     protected Resume subGet(Object uuid) {
-        return this.resumeMap.get(uuid);
+        Resume resume1=(Resume)uuid;
+        return this.resumeMap.get(resume1.getUuid());
     }
 
     @Override
-    protected boolean checkKey(Object key) {
-        return key != null;
+    protected void subSave(Object uuid, Resume resume) {
+        //здесь uuid всегда равен null
+        this.resumeMap.putIfAbsent(resume.getUuid(), resume);
     }
+
+    @Override
+    protected void subDelete(Object uuid) {
+        Resume resume1=(Resume)uuid;
+        this.resumeMap.remove(resume1.getUuid());
+    }
+
 }

@@ -6,7 +6,7 @@ import java.util.*;
 
 public class MapStorage extends AbstractStorage {
 
-    private final Map<Object, Resume> resumeMap = new HashMap<>();
+    protected final Map<String, Resume> resumeMap = new HashMap<>();
 
     @Override
     public void clear() {
@@ -24,8 +24,8 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected Object getKey(Resume resume) {
-        return this.resumeMap.containsKey(resume.getUuid()) ? resume.getUuid() : null;
+    protected Object getKey(String uuid) {
+        return this.resumeMap.containsKey(uuid) ? uuid : null;
     }
 
     @Override

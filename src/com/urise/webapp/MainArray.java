@@ -15,7 +15,7 @@ import java.util.List;
  */
 
 public class MainArray {
-    private final static AbstractStorage ARRAY_STORAGE = new MapStorageByFullName();
+    private final static AbstractStorage ARRAY_STORAGE = new SortedArrayStorage();
 
     public static void main(String[] args) throws IOException {
 
@@ -50,11 +50,11 @@ public class MainArray {
                     printAll();
                     break;
                 case "delete":
-                    ARRAY_STORAGE.delete(new Resume(uuid,fullName));
+                    ARRAY_STORAGE.delete(uuid);
                     printAll();
                     break;
                 case "get":
-                    System.out.println(ARRAY_STORAGE.get(new Resume(uuid,fullName)));
+                    System.out.println(ARRAY_STORAGE.get(uuid));
                     break;
                 case "clear":
                     ARRAY_STORAGE.clear();
