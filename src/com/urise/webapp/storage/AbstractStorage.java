@@ -11,7 +11,7 @@ import java.util.List;
 
 public abstract class AbstractStorage implements Storage {
 
-    public Object getKeyIfResumeExist(String uuid) {
+    private Object getKeyIfResumeExist(String uuid) {
         Object key = getKey(uuid);
         if (checkKey(key))
             return key;
@@ -60,7 +60,7 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract boolean checkKey(Object key);
 
-    protected abstract Object getKey(Object uuid);
+    protected abstract Object getKey(String uuid);
 
     protected abstract void subUpdate(Object key, Resume resume);
 

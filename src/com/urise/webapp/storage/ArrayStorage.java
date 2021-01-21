@@ -18,7 +18,7 @@ public class ArrayStorage extends AbstractArrayStorage {
     }
 
     @Override
-    protected Object getKey(Object uuid) {
+    protected Object getKey(String uuid) {
         int index = -1;
         if (size == 0 || uuid == null) {
             return index;

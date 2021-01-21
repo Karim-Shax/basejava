@@ -22,18 +22,8 @@ public abstract class AbstractMapStorage extends AbstractStorage {
     }
 
     @Override
-    protected void subSave(Object uuid, Resume resume) {
-        //здесь uuid всегда равен null
-        resumeMap.putIfAbsent(resume.getUuid(), resume);
-    }
-
-    @Override
     public int size() {
-        return this.resumeMap.size();
+        return resumeMap.size();
     }
 
-    @Override
-    protected boolean checkKey(Object key) {
-        return key != null;
-    }
 }
