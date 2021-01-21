@@ -2,29 +2,11 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.model.Resume;
 
-import java.util.*;
 
-public class MapStorage extends AbstractStorage {
-
-    protected final Map<String, Resume> resumeMap = new HashMap<>();
+public class MapStorage extends AbstractMapStorage {
 
     @Override
-    public void clear() {
-        resumeMap.clear();
-    }
-
-    @Override
-    protected List<Resume> getAll() {
-        return new ArrayList<>(this.resumeMap.values());
-    }
-
-    @Override
-    public int size() {
-        return this.resumeMap.size();
-    }
-
-    @Override
-    protected Object getKey(String uuid) {
+    protected Object getKey(Object uuid) {
         return this.resumeMap.containsKey(uuid) ? uuid : null;
     }
 
@@ -39,19 +21,7 @@ public class MapStorage extends AbstractStorage {
     }
 
     @Override
-    protected void subSave(Object uuid, Resume resume) {
-        //здесь uuid всегда равен null
-        this.resumeMap.putIfAbsent(resume.getUuid(), resume);
-    }
-
-    @Override
     protected void subDelete(Object uuid) {
         this.resumeMap.remove(uuid);
     }
-
-    @Override
-    protected boolean checkKey(Object key) {
-        return key != null;
-    }
-
 }

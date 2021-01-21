@@ -60,7 +60,7 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract boolean checkKey(Object key);
 
-    protected abstract Object getKey(String uuid);
+    protected abstract Object getKey(Object uuid);
 
     protected abstract void subUpdate(Object key, Resume resume);
 
