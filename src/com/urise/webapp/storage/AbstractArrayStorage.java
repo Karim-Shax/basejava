@@ -6,7 +6,7 @@ import com.urise.webapp.model.Resume;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class AbstractArrayStorage extends AbstractStorage {
+public abstract class AbstractArrayStorage extends AbstractStorage<Integer> {
 
     protected static final int STORAGE_LIMIT = 100;
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
@@ -19,8 +19,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public void subUpdate(Object index, Resume resume) {
-        storage[(int) index] = resume;
+    public void subUpdate(Integer index, Resume resume) {
+        storage[index] = resume;
     }
 
     @Override
@@ -29,8 +29,8 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public Resume subGet(Object index) {
-        return storage[(int) index];
+    public Resume subGet(Integer index) {
+        return storage[index];
     }
 
     @Override
@@ -39,9 +39,9 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public void subSave(Object index, Resume resume) {
+    public void subSave(Integer index, Resume resume) {
         if (size < storage.length) {
-            insertSave(resume, (int) index);
+            insertSave(resume, index);
             size++;
         } else {
             throw new StorageException("Storage overflow", resume.getUuid());
@@ -49,15 +49,15 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    public void subDelete(Object index) {
-        delete((int) index);
+    public void subDelete(Integer index) {
+        delete(index);
         storage[size - 1] = null;
         size--;
     }
 
     @Override
-    protected boolean checkKey(Object key) {
-        return (int) key >= 0;
+    protected boolean checkKey(Integer key) {
+        return key >= 0;
     }
 
     protected abstract void delete(int index);

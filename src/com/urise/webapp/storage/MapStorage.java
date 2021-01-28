@@ -3,36 +3,36 @@ package com.urise.webapp.storage;
 import com.urise.webapp.model.Resume;
 
 
-public class MapStorage extends AbstractMapStorage {
+public class MapStorage extends AbstractMapStorage<String> {
 
 
     @Override
-    protected Object getKey(String uuid) {
+    protected String getKey(String uuid) {
         return uuid;
     }
 
     @Override
-    protected void subUpdate(Object uuid, Resume resume) {
-        resumeMap.put(String.valueOf(uuid), resume);
+    protected void subUpdate(String uuid, Resume resume) {
+        resumeMap.put(uuid, resume);
     }
 
     @Override
-    protected Resume subGet(Object uuid) {
+    protected Resume subGet(String uuid) {
         return resumeMap.get(uuid);
     }
 
     @Override
-    protected void subSave(Object uuid, Resume resume) {
-        resumeMap.putIfAbsent(String.valueOf(uuid), resume);
+    protected void subSave(String uuid, Resume resume) {
+        resumeMap.putIfAbsent(uuid, resume);
     }
 
     @Override
-    protected void subDelete(Object uuid) {
+    protected void subDelete(String uuid) {
         resumeMap.remove(uuid);
     }
 
     @Override
-    protected boolean checkKey(Object key) {
+    protected boolean checkKey(String key) {
         return resumeMap.containsKey(key);
     }
 
