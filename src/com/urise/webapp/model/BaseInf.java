@@ -1,6 +1,7 @@
 package com.urise.webapp.model;
 
 public class BaseInf implements ProfessionalSkill {
+
     private String title;
     private String text;
 

@@ -2,21 +2,22 @@ package com.urise.webapp.model;
 
 import java.time.LocalDate;
 
-public class ExperienceEducationInf implements ProfessionalSkill{
+public class Experience {
+
     private String Company;
     private LocalDate startTime;
     private LocalDate endTime;
     private String TechnologyNameVersion;
 
 
-    public ExperienceEducationInf(String company, LocalDate startTime, LocalDate endTime, String technologyNameVersion) {
+    public Experience(String company, LocalDate startTime, LocalDate endTime, String technologyNameVersion) {
         Company = company;
         this.startTime = startTime;
         this.endTime = endTime;
         TechnologyNameVersion = technologyNameVersion;
     }
 
-    public ExperienceEducationInf() {
+    public Experience() {
     }
 
     public void setCompany(String company) {
@@ -46,7 +47,7 @@ public class ExperienceEducationInf implements ProfessionalSkill{
     public void setTechnologyNameVersion(String technologyNameVersion) {
         TechnologyNameVersion = technologyNameVersion;
     }
-    @Override
+
     public String getText() {
         return Company;
     }
@@ -54,9 +55,9 @@ public class ExperienceEducationInf implements ProfessionalSkill{
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ExperienceEducationInf)) return false;
+        if (!(o instanceof Experience)) return false;
 
-        ExperienceEducationInf that = (ExperienceEducationInf) o;
+        Experience that = (Experience) o;
 
         if (Company != null ? !Company.equals(that.Company) : that.Company != null) return false;
         if (startTime != null ? !startTime.equals(that.startTime) : that.startTime != null) return false;
@@ -75,11 +76,11 @@ public class ExperienceEducationInf implements ProfessionalSkill{
 
     @Override
     public String toString() {
-        return "ExperienceEducationInf{" +
+        return "\n" + "Experience{" + "\n" +
                 "Company='" + Company + '\'' +
                 ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", TechnologyNameVersion='" + TechnologyNameVersion + '\'' +
-                '}';
+                ", endTime=" + endTime + "\n" +
+                "TechnologyNameVersion=" + "\n" + TechnologyNameVersion +
+                " }" + "\n";
     }
 }

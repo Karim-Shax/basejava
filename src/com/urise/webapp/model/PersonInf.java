@@ -8,6 +8,7 @@ public enum PersonInf {
     QUALIFICATIONS("Квалификация"),
     EXPERIENCE("Опыт работы"),
     EDUCATION("Образование");
+
     private String title;
 
     PersonInf(String title) {

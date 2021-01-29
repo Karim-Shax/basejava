@@ -2,19 +2,19 @@ package com.urise.webapp.model;
 
 import java.util.List;
 
-public class Certification implements ProfessionalSkill {
+public class Certification<T> implements ProfessionalSkill {
     private String title;
-    private List<String> detail;
+    private List<T> detail;
 
     public Certification() {
     }
 
-    public Certification(String title, List<String> detail) {
+    public Certification(String title, List<T> detail) {
         this.title = title;
         this.detail = detail;
     }
 
-    public void setDetail(List<String> detail) {
+    public void setDetail(List<T> detail) {
         this.detail = detail;
     }
 
@@ -22,7 +22,7 @@ public class Certification implements ProfessionalSkill {
         this.title = title;
     }
 
-    public List<String> getDetail() {
+    public List<T> getDetail() {
         return detail;
     }
 
@@ -52,8 +52,7 @@ public class Certification implements ProfessionalSkill {
     @Override
     public String toString() {
         return "Certification{" +
-                "title='" + title + '\'' +
-                ", detail=" + detail.toString() +
-                '}';
+                "title=" + title + "\n" +
+                ", detail=" + detail.toString() + '}' + "\n";
     }
 }
