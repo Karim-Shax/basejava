@@ -1,32 +1,24 @@
 package com.urise.webapp.model;
 
+import java.util.Objects;
+
 public class BaseInf implements ProfessionalSkill {
 
-    private String title;
-    private String text;
-
-    public BaseInf() {
-    }
+    private final String title;
+    private final String urlText;
 
     public BaseInf(String title, String text) {
+        Objects.requireNonNull(title,"title must not be null");
         this.title = title;
-        this.text = text;
+        this.urlText = text;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getText() {
-        return text;
-    }
-
-    public void setText(String text) {
-        this.text = text;
+    public String getUrlText() {
+        return urlText;
     }
 
     @Override
@@ -36,14 +28,14 @@ public class BaseInf implements ProfessionalSkill {
 
         BaseInf baseInf = (BaseInf) o;
 
-        if (title != null ? !title.equals(baseInf.title) : baseInf.title != null) return false;
-        return text != null ? text.equals(baseInf.text) : baseInf.text == null;
+        if (!title.equals(baseInf.title)) return false;
+        return Objects.equals(urlText, baseInf.urlText);
     }
 
     @Override
     public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
-        result = 31 * result + (text != null ? text.hashCode() : 0);
+        int result = title.hashCode();
+        result = 31 * result + (urlText != null ? urlText.hashCode() : 0);
         return result;
     }
 
@@ -51,7 +43,7 @@ public class BaseInf implements ProfessionalSkill {
     public String toString() {
         return "BaseInf{" +
                 "title='" + title + '\'' +
-                ", text='" + text + '\'' +
+                ", urlText='" + urlText + '\'' +
                 '}';
     }
 }

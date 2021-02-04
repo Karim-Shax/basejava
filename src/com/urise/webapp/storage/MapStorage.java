@@ -5,7 +5,6 @@ import com.urise.webapp.model.Resume;
 
 public class MapStorage extends AbstractMapStorage<String> {
 
-
     @Override
     protected String getKey(String uuid) {
         return uuid;

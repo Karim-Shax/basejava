@@ -1,15 +1,15 @@
 package com.urise.webapp.model;
 
-public enum ContentType {
+public enum ContactType {
     PHONE("Phone"),
     SKYPE("Skype"),
     EMAIL("Email"),
     LINKEDIN("LinkedIn"),
     GITHUB("GitHub"),
-    STACKOVERFLOW("StackoverFlow");
+    STACKOVERFLOW("StackOverFlow");
     private String title;
 
-    ContentType(String title) {
+    ContactType(String title) {
         this.title = title;
     }
 

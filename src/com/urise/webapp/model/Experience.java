@@ -1,55 +1,38 @@
 package com.urise.webapp.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
-public class Experience {
+public class Experience implements ProfessionalSkill {
 
-    private String Company;
-    private LocalDate startTime;
-    private LocalDate endTime;
-    private String TechnologyNameVersion;
+    private final BaseInf homePage;
+    private final List<PeriodPosition> list = new ArrayList<>();
 
-
-    public Experience(String company, LocalDate startTime, LocalDate endTime, String technologyNameVersion) {
-        Company = company;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        TechnologyNameVersion = technologyNameVersion;
+    public Experience(String name, String url, LocalDate startTime, LocalDate endTime, String title, String technologyNameVersion) {
+        Objects.requireNonNull(startTime, "startTime must not be null");
+        Objects.requireNonNull(endTime, "endTime must not be null");
+        Objects.requireNonNull(title, "title must not be null");
+        this.homePage = new BaseInf(name, url);
+        addPeriodPosition(new PeriodPosition(title, startTime, endTime, technologyNameVersion));
     }
 
-    public Experience() {
+    public Experience(BaseInf homePage, PeriodPosition position) {
+        this.homePage = homePage;
+        addPeriodPosition(position);
     }
 
-    public void setCompany(String company) {
-        Company = company;
+    public void addPeriodPosition(PeriodPosition position) {
+        list.add(position);
     }
 
-    public LocalDate getStartTime() {
-        return startTime;
+    public BaseInf getHomePage() {
+        return homePage;
     }
 
-    public void setStartTime(LocalDate startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDate getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDate endTime) {
-        this.endTime = endTime;
-    }
-
-    public String getTechnologyNameVersion() {
-        return TechnologyNameVersion;
-    }
-
-    public void setTechnologyNameVersion(String technologyNameVersion) {
-        TechnologyNameVersion = technologyNameVersion;
-    }
-
-    public String getText() {
-        return Company;
+    public List<PeriodPosition> getList() {
+        return list;
     }
 
     @Override
@@ -59,28 +42,22 @@ public class Experience {
 
         Experience that = (Experience) o;
 
-        if (Company != null ? !Company.equals(that.Company) : that.Company != null) return false;
-        if (startTime != null ? !startTime.equals(that.startTime) : that.startTime != null) return false;
-        if (endTime != null ? !endTime.equals(that.endTime) : that.endTime != null) return false;
-        return TechnologyNameVersion != null ? TechnologyNameVersion.equals(that.TechnologyNameVersion) : that.TechnologyNameVersion == null;
+        if (!homePage.equals(that.homePage)) return false;
+        return list.equals(that.list);
     }
 
     @Override
     public int hashCode() {
-        int result = Company != null ? Company.hashCode() : 0;
-        result = 31 * result + (startTime != null ? startTime.hashCode() : 0);
-        result = 31 * result + (endTime != null ? endTime.hashCode() : 0);
-        result = 31 * result + (TechnologyNameVersion != null ? TechnologyNameVersion.hashCode() : 0);
+        int result = homePage.hashCode();
+        result = 31 * result + list.hashCode();
         return result;
     }
 
     @Override
     public String toString() {
-        return "\n" + "Experience{" + "\n" +
-                "Company='" + Company + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime + "\n" +
-                "TechnologyNameVersion=" + "\n" + TechnologyNameVersion +
-                " }" + "\n";
+        return "Experience{" +
+                "homePage=" + homePage +
+                ", list=" + list +
+                '}';
     }
 }

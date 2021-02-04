@@ -4,7 +4,6 @@ import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 import org.junit.Test;
 
-
 import static org.junit.Assert.*;
 
 public abstract class AbstractArrayStorageTest extends AbstractStorageTest {

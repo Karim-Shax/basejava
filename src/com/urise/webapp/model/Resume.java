@@ -2,6 +2,7 @@ package com.urise.webapp.model;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -10,8 +11,8 @@ import java.util.UUID;
 public class Resume implements Comparable<Resume> {
 
     private final String uuid;
-    private String fullName;
-    private Map<ContentType, BaseInf> contacts;
+    private final String fullName;
+    private Map<ContactType, BaseInf> contacts;
     private Map<PersonInf, ProfessionalSkill> info;
 
     public Resume(String fullName) {
@@ -19,6 +20,8 @@ public class Resume implements Comparable<Resume> {
     }
 
     public Resume(String uuid, String fullName) {
+        Objects.requireNonNull(uuid, "uuid must not be null");
+        Objects.requireNonNull(fullName, "fullName must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
     }
@@ -27,11 +30,11 @@ public class Resume implements Comparable<Resume> {
         this.info = info;
     }
 
-    public Map<ContentType, BaseInf> getContacts() {
+    public Map<ContactType, BaseInf> getContacts() {
         return contacts;
     }
 
-    public void setContacts(EnumMap<ContentType, BaseInf> contacts) {
+    public void setContacts(EnumMap<ContactType, BaseInf> contacts) {
         this.contacts = contacts;
     }
 
@@ -47,6 +50,14 @@ public class Resume implements Comparable<Resume> {
         return uuid;
     }
 
+    public BaseInf getCont(ContactType type) {
+        return contacts.get(type);
+    }
+
+    public ProfessionalSkill getProfSkill(PersonInf inf) {
+        return info.get(inf);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -54,10 +65,10 @@ public class Resume implements Comparable<Resume> {
 
         Resume resume = (Resume) o;
 
-        if (uuid != null ? !uuid.equals(resume.uuid) : resume.uuid != null) return false;
-        if (fullName != null ? !fullName.equals(resume.fullName) : resume.fullName != null) return false;
-        if (contacts != null ? !contacts.equals(resume.contacts) : resume.contacts != null) return false;
-        return info != null ? info.equals(resume.info) : resume.info == null;
+        if (!Objects.equals(uuid, resume.uuid)) return false;
+        if (!Objects.equals(fullName, resume.fullName)) return false;
+        if (!Objects.equals(contacts, resume.contacts)) return false;
+        return Objects.equals(info, resume.info);
     }
 
     @Override

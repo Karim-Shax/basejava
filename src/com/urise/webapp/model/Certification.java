@@ -1,34 +1,32 @@
 package com.urise.webapp.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Certification<T> implements ProfessionalSkill {
-    private String title;
-    private List<T> detail;
+    private final List<T> detail;
 
-    public Certification() {
-    }
-
-    public Certification(String title, List<T> detail) {
-        this.title = title;
+    public Certification(List<T> detail) {
+        Objects.requireNonNull(detail, "list most not be null");
         this.detail = detail;
-    }
-
-    public void setDetail(List<T> detail) {
-        this.detail = detail;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public List<T> getDetail() {
         return detail;
     }
 
-    @Override
-    public String getText() {
-        return title;
+    public void addExperience(String name, String url, PeriodPosition position) {
+        BaseInf inf = new BaseInf(name, url);
+        boolean isExist = false;
+        for (Experience ex : (List<Experience>) detail) {
+            if (inf.equals(ex.getHomePage())) {
+                ex.addPeriodPosition(position);
+                isExist = true;
+            }
+        }
+        if (!isExist) {
+            detail.add((T) new Experience(inf, position));
+        }
     }
 
     @Override
@@ -36,23 +34,20 @@ public class Certification<T> implements ProfessionalSkill {
         if (this == o) return true;
         if (!(o instanceof Certification)) return false;
 
-        Certification that = (Certification) o;
+        Certification<?> that = (Certification<?>) o;
 
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
-        return detail != null ? detail.equals(that.detail) : that.detail == null;
+        return detail.equals(that.detail);
     }
 
     @Override
     public int hashCode() {
-        int result = title != null ? title.hashCode() : 0;
-        result = 31 * result + (detail != null ? detail.hashCode() : 0);
-        return result;
+        return detail.hashCode();
     }
 
     @Override
     public String toString() {
         return "Certification{" +
-                "title=" + title + "\n" +
-                ", detail=" + detail.toString() + '}' + "\n";
+                "detail=" + detail +
+                '}';
     }
 }
