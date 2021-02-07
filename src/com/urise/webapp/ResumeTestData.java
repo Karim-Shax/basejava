@@ -3,6 +3,7 @@ package com.urise.webapp;
 import com.urise.webapp.model.*;
 import com.urise.webapp.storage.AbstractFileStorage;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -13,20 +14,11 @@ public class ResumeTestData {
         Resume resume3 = defaultResume("uuid3", "Full Name");
         Resume resume4 = defaultResume("uuid4", "Full Name");
         Resume resume5 = defaultResume("uuid5", "Full Name");
-
-        AbstractFileStorage fileStorage = new AbstractFileStorage("D:/storage");
-        /*fileStorage.addWriteFile(resume1);
-        fileStorage.addWriteFile(resume2);
-        fileStorage.addWriteFile(resume3);
-        fileStorage.addWriteFile(resume4);
-        fileStorage.addWriteFile(resume5);*/
-
-
-        fileStorage.removeFile(resume1);
-        fileStorage.removeFile(resume3);
     }
 
+    //метод который принимает uuid и fullname возвращает заполненное резюме также используется в тестах SuitClass
     public static Resume defaultResume(String uuid, String fullName) {
+
         Resume first = new Resume(uuid, fullName);
 
         List<String> archievement = new ArrayList<>();
@@ -125,20 +117,39 @@ public class ResumeTestData {
         eduction.add(new Experience("SPNUIT", null, LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1), spnuit1, null));
         eduction.add(new Experience("MFTI", null, LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1), MFTI, null));
 
+        //пример добавления в место работы еще одну дату с описанием и позицией
+        Certification<Experience> cer = new Certification<>(eduction);
+        cer.addExperience("MFTI", null, new PeriodPosition(MFTI, LocalDate.of(2020, 9, 1), LocalDate.of(2020, 6, 1), null));
 
         pesonInf.put(PersonInf.PERSONAL, new BaseInf(PersonInf.PERSONAL.getTitle(), personal));
         pesonInf.put(PersonInf.OBJECTIVE, new BaseInf(PersonInf.OBJECTIVE.getTitle(), objective));
         pesonInf.put(PersonInf.ACHIEVEMENT, new Certification<>(archievement));
         pesonInf.put(PersonInf.QUALIFICATIONS, new Certification<>(qualif));
         pesonInf.put(PersonInf.EXPERIENCE, new Certification<>(experience));
-        pesonInf.put(PersonInf.EDUCATION, new Certification<>(eduction));
-        Certification<Experience> cer = (Certification<Experience>) pesonInf.get(PersonInf.EDUCATION);
-
-        cer.addExperience("MFTI", null, new PeriodPosition(MFTI, LocalDate.of(2020, 9, 1), LocalDate.of(2020, 6, 1), null));
+        pesonInf.put(PersonInf.EDUCATION, cer);
 
         System.out.println(cer.getDetail().toString());
         first.setInfo(pesonInf);
-
         return first;
+    }
+
+    //рекурсивный метод который проходит по всем файлам и подпапкам, возвращает список строк путей к файлам (только файлам)
+    //на вход принимает два пустых Linkedlist и файл корень по которому надо пройтись
+
+    public static List<String> getTree(Queue<File> listFile, File file, List<String> str) {
+        for (File k : file.listFiles()) {
+            if (k.isDirectory()) {
+                // здесь добавляется в очередь файл
+                listFile.offer(k);
+            } else {
+                str.add(k.getAbsolutePath());
+            }
+        }
+        if (!listFile.isEmpty()) {
+            // здесь удаляется из очереди и передается дальше пока не закончатся директорий
+            return getTree(listFile, listFile.poll(), str);
+        } else {
+            return str;
+        }
     }
 }
