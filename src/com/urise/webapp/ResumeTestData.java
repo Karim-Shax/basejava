@@ -1,9 +1,7 @@
 package com.urise.webapp;
 
 import com.urise.webapp.model.*;
-import com.urise.webapp.storage.AbstractFileStorage;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -14,6 +12,8 @@ public class ResumeTestData {
         Resume resume3 = defaultResume("uuid3", "Full Name");
         Resume resume4 = defaultResume("uuid4", "Full Name");
         Resume resume5 = defaultResume("uuid5", "Full Name");
+
+        System.out.println(resume1.toString());
     }
 
     //метод который принимает uuid и fullname возвращает заполненное резюме также используется в тестах SuitClass
@@ -39,8 +39,8 @@ public class ResumeTestData {
 
         first.setContacts(contacts);
 
-        String personal = "Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры." + "\n";
-        String objective = "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям" + "\n";
+        String personal = "Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры.";
+        String objective = "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям";
 
 
         archievement.add("С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\", \"Многомодульный maven. " +
@@ -69,7 +69,7 @@ public class ResumeTestData {
         qualif.add("Python: Django." + "\n");
         qualif.add("JavaScript: jQuery, ExtJS, Bootstrap.js, underscore.js" + "\n");
         qualif.add("Scala: SBT, Play2, Specs2, Anorm, Spray, Akka" + "\n");
-        qualif.add("Технологии: Servlet, JSP/JSTL, JAX-WS, REST, EJB, RMI, JMS, JavaMail, JAXB, StAX, SAX, DOM, XSLT, MDB, JMX, JDBC, JPA, JNDI, JAAS, SOAP, AJAX, Commet, " +
+        qualif.add("Технологии: Servlet, JSP/JSTL, JAX-WS, REST, EJB, RMI, JMS, JavaMail, JAXB, StAX, SAX, DOM, XSLT, MDB, JMX, JDBC, JPA, JNDI, JAAS, SOAP, AJAX, Commet, " + "\n" +
                 "HTML5, ESB, CMIS, BPMN2, LDAP, OAuth1, OAuth2, JWT." + "\n");
         qualif.add("Инструменты: Maven + plugin development, Gradle, настройка Ngnix," + "\n");
         qualif.add("администрирование Hudson/Jenkins, Ant + custom task, SoapUI, JPublisher, Flyway, Nagios, iReport, OpenCmis, Bonita, pgBouncer." + "\n");
@@ -92,19 +92,19 @@ public class ResumeTestData {
         String Siemens = "Разработка информационной модели, проектирование интерфейсов, реализация и отладка ПО на мобильной IN платформе Siemens @vantage (Java, Unix)." + "\n";
         String Alcatel = "Тестирование, отладка, внедрение ПО цифровой телефонной станции Alcatel 1000 S12 (CHILL, ASM)." + "\n";
 
-        experience.add(new Experience("Java Online Projects", null, LocalDate.of(2013, 10, 1), LocalDate.now(), "\tАвтор проекта.\n", javaOnline));
+        experience.add(new Experience("Java Online Projects", null, LocalDate.of(2013, 10, 1), LocalDate.now(), "Автор проекта.\n", javaOnline));
         experience.add(new Experience("Wrike", null, LocalDate.of(2014, 10, 1), LocalDate.of(16, 1, 1), "Старший разработчик (backend)\n", Wrike));
         experience.add(new Experience("RIT Center", null, LocalDate.of(2012, 4, 1), LocalDate.of(2014, 10, 1), "Java архитектор\n", RIT));
         experience.add(new Experience("Luxoft (Deutsche Bank)", null, LocalDate.of(2010, 12, 1), LocalDate.of(2012, 4, 1), "Ведущий программист\n", Luxoft));
-        experience.add(new Experience("Yota", null, LocalDate.of(2008, 6, 1), LocalDate.of(2010, 12, 1), "\tВедущий специалист\n", Yota));
+        experience.add(new Experience("Yota", null, LocalDate.of(2008, 6, 1), LocalDate.of(2010, 12, 1), "Ведущий специалист\n", Yota));
         experience.add(new Experience("Enkata", null, LocalDate.of(2007, 3, 1), LocalDate.of(2008, 6, 1), "Разработчик ПО\n", Ekarta));
         experience.add(new Experience("Siemens AG", null, LocalDate.of(2005, 1, 1), LocalDate.of(1997, 9, 1), "Разработчик ПО\n", Siemens));
         experience.add(new Experience("Alcatel", null, LocalDate.of(1997, 9, 1), LocalDate.of(2005, 1, 1), "Инженер по аппаратному и программному тестированию\n", Alcatel));
 
-        String coursera = "\"Functional Programming Principles in Scala\" by Martin Odersky";
-        String LuxEdu = "\tКурс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"";
-        String SiemensEdu = "\t3 месяца обучения мобильным IN сетям (Берлин)";
-        String AlcatelEdu = "\t6 месяцев обучения цифровым телефонным сетям (Москва)";
+        String coursera = "Functional Programming Principles in Scala by Martin Odersky";
+        String LuxEdu = "Курс Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.";
+        String SiemensEdu = "3 месяца обучения мобильным IN сетям (Берлин)";
+        String AlcatelEdu = "6 месяцев обучения цифровым телефонным сетям (Москва)";
         String spnuit = "Аспирантура (программист С, С++)";
         String spnuit1 = "Инженер (программист Fortran, C)";
         String MFTI = "Закончил с отличием";
@@ -128,28 +128,10 @@ public class ResumeTestData {
         pesonInf.put(PersonInf.EXPERIENCE, new Certification<>(experience));
         pesonInf.put(PersonInf.EDUCATION, cer);
 
-        System.out.println(cer.getDetail().toString());
         first.setInfo(pesonInf);
+
         return first;
     }
 
-    //рекурсивный метод который проходит по всем файлам и подпапкам, возвращает список строк путей к файлам (только файлам)
-    //на вход принимает два пустых Linkedlist и файл корень по которому надо пройтись
 
-    public static List<String> getTree(Queue<File> listFile, File file, List<String> str) {
-        for (File k : file.listFiles()) {
-            if (k.isDirectory()) {
-                // здесь добавляется в очередь файл
-                listFile.offer(k);
-            } else {
-                str.add(k.getAbsolutePath());
-            }
-        }
-        if (!listFile.isEmpty()) {
-            // здесь удаляется из очереди и передается дальше пока не закончатся директорий
-            return getTree(listFile, listFile.poll(), str);
-        } else {
-            return str;
-        }
-    }
 }

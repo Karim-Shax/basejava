@@ -1,9 +1,6 @@
 package com.urise.webapp.model;
 
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Initial resume class
@@ -82,12 +79,12 @@ public class Resume implements Comparable<Resume> {
 
     @Override
     public String toString() {
-        return "Resume{" +
-                "uuid='" + uuid + '\'' +
-                ", fullName='" + fullName + '\'' +
-                ", contacts=" + contacts +
-                ", info=" + info +
-                '}';
+        return "Resume" + "\n" +
+                "uuid=\t\t" + uuid + "\n" +
+                "fullName=\t'" + fullName + "\n" +
+                "contacts=\t" + contacts.values().toString() + "\n" +
+                "info=" + info.values().toString() +
+                "\n";
     }
 
     @Override

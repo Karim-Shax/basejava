@@ -15,7 +15,7 @@ import java.util.List;
 
 public abstract class AbstractStorageTest {
 
-    protected final AbstractStorage storage;
+    protected final Storage storage;
 
     protected static final Resume RESUME_1 = ResumeTestData.defaultResume("uuid1", "Aleksei");
     protected static final Resume RESUME_2 = ResumeTestData.defaultResume("uuid2", "Nikolai");

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class Experience implements ProfessionalSkill {
 
@@ -55,9 +56,8 @@ public class Experience implements ProfessionalSkill {
 
     @Override
     public String toString() {
-        return "Experience{" +
-                "homePage=" + homePage +
-                ", list=" + list +
-                '}';
+        return "\nExperience" + "\n" +
+                "homePage=\t" + homePage +
+                "list=\n" + list;
     }
 }

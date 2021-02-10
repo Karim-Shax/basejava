@@ -8,7 +8,7 @@ public class PeriodPosition {
     private final String title;
     private final LocalDate startTime;
     private final LocalDate endTime;
-    private final String TechnologyNameVersion;
+    private final String technoLogyNameVersion;
 
     public PeriodPosition(String title, LocalDate startTime, LocalDate endTime, String technologyNameVersion) {
         Objects.requireNonNull(startTime, "startTime must not be null");
@@ -17,7 +17,7 @@ public class PeriodPosition {
         this.title = title;
         this.startTime = startTime;
         this.endTime = endTime;
-        TechnologyNameVersion = technologyNameVersion;
+        technoLogyNameVersion = technologyNameVersion;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class PeriodPosition {
         if (!title.equals(that.title)) return false;
         if (!startTime.equals(that.startTime)) return false;
         if (!endTime.equals(that.endTime)) return false;
-        return Objects.equals(TechnologyNameVersion, that.TechnologyNameVersion);
+        return Objects.equals(technoLogyNameVersion, that.technoLogyNameVersion);
     }
 
     @Override
@@ -38,17 +38,16 @@ public class PeriodPosition {
         int result = title.hashCode();
         result = 31 * result + startTime.hashCode();
         result = 31 * result + endTime.hashCode();
-        result = 31 * result + (TechnologyNameVersion != null ? TechnologyNameVersion.hashCode() : 0);
+        result = 31 * result + (technoLogyNameVersion != null ? technoLogyNameVersion.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "PeriodPosition{" +
-                "title='" + title + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", TechnologyNameVersion='" + TechnologyNameVersion + '\'' +
-                '}';
+        return "PeriodPosition" + "\n" +
+                "title=\t\t" + title + "\n" +
+                "startTime=\t" + startTime + "\n" +
+                "endTime=\t" + endTime + "\n" +
+                "technoLogyNameVersion=" + technoLogyNameVersion + "\n";
     }
 }

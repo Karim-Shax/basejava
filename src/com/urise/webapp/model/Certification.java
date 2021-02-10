@@ -46,8 +46,8 @@ public class Certification<T> implements ProfessionalSkill {
 
     @Override
     public String toString() {
-        return "Certification{" +
-                "detail=" + detail +
-                '}';
+        return "Certification" +"\n"+
+                "detail=\n" + detail +
+                "\n";
     }
 }

@@ -1,6 +1,7 @@
 package com.urise.webapp.model;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class BaseInf implements ProfessionalSkill {
 
@@ -8,7 +9,7 @@ public class BaseInf implements ProfessionalSkill {
     private final String urlText;
 
     public BaseInf(String title, String text) {
-        Objects.requireNonNull(title,"title must not be null");
+        Objects.requireNonNull(title, "title must not be null");
         this.title = title;
         this.urlText = text;
     }
@@ -41,9 +42,8 @@ public class BaseInf implements ProfessionalSkill {
 
     @Override
     public String toString() {
-        return "BaseInf{" +
-                "title='" + title + '\'' +
-                ", urlText='" + urlText + '\'' +
-                '}';
+        return "\bBaseInf" + "\n" +
+                "title=\t\t" + title + "\n" +
+                "urlText=\t" + urlText + "\n";
     }
 }
