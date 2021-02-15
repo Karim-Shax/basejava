@@ -1,4 +1,7 @@
 package com.urise.webapp.model;
 
-public interface ProfessionalSkill {
+import java.io.Serializable;
+
+public interface ProfessionalSkill extends Serializable {
+
 }

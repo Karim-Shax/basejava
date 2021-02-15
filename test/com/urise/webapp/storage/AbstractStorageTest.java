@@ -7,6 +7,7 @@ import com.urise.webapp.model.Resume;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.File;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -16,6 +17,7 @@ import java.util.List;
 public abstract class AbstractStorageTest {
 
     protected final Storage storage;
+    protected static final File STORAGEDIR = new File("D:/base/basejava/storage");
 
     protected static final Resume RESUME_1 = ResumeTestData.defaultResume("uuid1", "Aleksei");
     protected static final Resume RESUME_2 = ResumeTestData.defaultResume("uuid2", "Nikolai");

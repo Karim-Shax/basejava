@@ -1,35 +1,28 @@
 package com.urise.webapp;
 
-import java.io.File;
+import java.io.*;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
 
 public class MainFile {
     public static void main(String[] args) {
-        List<String> listFiles = getTree(new LinkedList<>(), new File("D:/tutorial"), new LinkedList());
-        for (String s:listFiles){
-            System.out.println(s);
-        }
+        printFileTree(new LinkedList<>(), new File("D:/base/basejava"));
     }
 
-    //рекурсивный метод который проходит по всем файлам и подпапкам, возвращает список строк путей к файлам (только файлам)
-    //на вход принимает два пустых Linkedlist и файл корень по которому надо пройтись
-
-    public static List<String> getTree(Queue<File> listFile, File file, List<String> str) {
-        for (File k : file.listFiles()) {
+    public static void printFileTree(Queue<File> listFile, File file) {
+        Objects.requireNonNull(listFile);
+        System.out.println("\t\t" + "directory " + "\"" + file.getAbsolutePath() + "\"");
+        for (File k : Objects.requireNonNull(file.listFiles())) {
             if (k.isDirectory()) {
-                // здесь добавляется в очередь файл
                 listFile.offer(k);
+                System.out.println("\t\t\t" + "child directory " + "\"" + k.getName() + "\"");
             } else {
-                str.add(k.getAbsolutePath());
+                System.out.println("\t\t\t" + "file " + k.getName());
             }
         }
         if (!listFile.isEmpty()) {
-            // здесь удаляется из очереди и передается дальше пока не закончатся директорий
-            return getTree(listFile, listFile.poll(), str);
-        } else {
-            return str;
+            printFileTree(listFile, listFile.poll());
         }
     }
 }

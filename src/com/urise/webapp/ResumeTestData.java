@@ -7,13 +7,6 @@ import java.util.*;
 
 public class ResumeTestData {
     public static void main(String[] args) {
-        Resume resume1 = defaultResume("uuid1", "Full Name");
-        Resume resume2 = defaultResume("uuid2", "Full Name");
-        Resume resume3 = defaultResume("uuid3", "Full Name");
-        Resume resume4 = defaultResume("uuid4", "Full Name");
-        Resume resume5 = defaultResume("uuid5", "Full Name");
-
-        System.out.println(resume1.toString());
     }
 
     //метод который принимает uuid и fullname возвращает заполненное резюме также используется в тестах SuitClass
@@ -119,7 +112,7 @@ public class ResumeTestData {
 
         //пример добавления в место работы еще одну дату с описанием и позицией
         Certification<Experience> cer = new Certification<>(eduction);
-        cer.addExperience("MFTI", null, new PeriodPosition(MFTI, LocalDate.of(2020, 9, 1), LocalDate.of(2020, 6, 1), null));
+        cer.addExperience("MFTI", null, new Experience.PeriodPosition(MFTI, LocalDate.of(2020, 9, 1), LocalDate.of(2020, 6, 1), null));
 
         pesonInf.put(PersonInf.PERSONAL, new BaseInf(PersonInf.PERSONAL.getTitle(), personal));
         pesonInf.put(PersonInf.OBJECTIVE, new BaseInf(PersonInf.OBJECTIVE.getTitle(), objective));

@@ -1,11 +1,14 @@
 package com.urise.webapp.model;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * Initial resume class
  */
-public class Resume implements Comparable<Resume> {
+public class Resume implements Comparable<Resume>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private final String uuid;
     private final String fullName;
@@ -82,8 +85,8 @@ public class Resume implements Comparable<Resume> {
         return "Resume" + "\n" +
                 "uuid=\t\t" + uuid + "\n" +
                 "fullName=\t'" + fullName + "\n" +
-                "contacts=\t" + contacts.values().toString() + "\n" +
-                "info=" + info.values().toString() +
+                "contacts=\t" + contacts + "\n" +
+                "info=" + info +
                 "\n";
     }
 

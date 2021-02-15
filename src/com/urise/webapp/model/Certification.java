@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class Certification<T> implements ProfessionalSkill {
+
+    private static final long serialVersionUID = 1L;
+
     private final List<T> detail;
 
     public Certification(List<T> detail) {
@@ -15,7 +18,7 @@ public class Certification<T> implements ProfessionalSkill {
         return detail;
     }
 
-    public void addExperience(String name, String url, PeriodPosition position) {
+    public void addExperience(String name, String url, Experience.PeriodPosition position) {
         BaseInf inf = new BaseInf(name, url);
         boolean isExist = false;
         for (Experience ex : (List<Experience>) detail) {

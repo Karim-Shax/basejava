@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 public abstract class AbstractArrayStorageTest extends AbstractStorageTest {
 
 
-    public AbstractArrayStorageTest(AbstractArrayStorage storage) {
+    public AbstractArrayStorageTest(AbstractStorage storage) {
         super(storage);
     }
 

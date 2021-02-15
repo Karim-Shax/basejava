@@ -1,9 +1,10 @@
 package com.urise.webapp.model;
 
 import java.util.Objects;
-import java.util.StringJoiner;
 
 public class BaseInf implements ProfessionalSkill {
+
+    private static final long serialVersionUID = 1L;
 
     private final String title;
     private final String urlText;
