@@ -2,22 +2,23 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.strategyclass.IOStrategy;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class AbstractPathStorage extends AbstractStorage<Path> {
+public class PathStorage extends AbstractStorage<Path> {
 
-    private Path directory;
-    private IOStrategy strategy;
+    private final Path directory;
+    private final IOStrategy strategy;
 
-    protected AbstractPathStorage(String dir, IOStrategy strategy) {
+    protected PathStorage(String dir, IOStrategy strategy) {
         directory = Paths.get(dir);
         Objects.requireNonNull(directory, "directory must not be null");
         Objects.requireNonNull(strategy, "io type must not be null");
@@ -25,24 +26,6 @@ public class AbstractPathStorage extends AbstractStorage<Path> {
         if (!Files.isDirectory(directory) || !Files.isWritable(directory)) {
             throw new IllegalArgumentException(dir + " is not directory or is not writable");
         }
-    }
-
-    @Override
-    public void clear() {
-        try {
-            Files.list(directory).forEach(this::subDelete);
-        } catch (IOException e) {
-            throw new StorageException("Path delete error", null);
-        }
-    }
-
-    @Override
-    public int size() {
-        String[] list = directory.toFile().list();
-        if (list == null) {
-            throw new StorageException("Directory read error", null);
-        }
-        return list.length;
     }
 
     @Override
@@ -92,12 +75,28 @@ public class AbstractPathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> getAll() {
-        List<Resume> list = new ArrayList<>();
+        return isEmptyFiles().map(this::subGet).collect(Collectors.toList());
+    }
+
+    @Override
+    public void clear() {
+        isEmptyFiles().forEach(this::subDelete);
+    }
+
+    @Override
+    public int size() {
+        return isEmptyFiles().toArray().length;
+    }
+
+    private Stream<Path> isEmptyFiles() {
         try {
-            list = Files.list(directory).map(this::subGet).collect(Collectors.toList());
+            if (Files.list(directory) == null) {
+                throw new StorageException("Directory read error", null);
+            } else {
+                return Files.list(directory);
+            }
         } catch (IOException e) {
             throw new StorageException("Path delete error", null);
         }
-        return list;
     }
 }

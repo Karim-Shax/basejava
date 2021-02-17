@@ -2,18 +2,19 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
+import com.urise.webapp.storage.strategyclass.IOStrategy;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AbstractFileStorage extends AbstractStorage<File> {
+public class FileStorage extends AbstractStorage<File> {
 
-    private File directory;
-    private IOStrategy strategy;
+    private final File directory;
+    private final IOStrategy strategy;
 
-    protected AbstractFileStorage(File directory, IOStrategy strategy) {
+    protected FileStorage(File directory, IOStrategy strategy) {
         Objects.requireNonNull(directory, "directory must not be null");
         Objects.requireNonNull(strategy, "io type must not be null");
         if (!directory.isDirectory()) {
@@ -23,27 +24,9 @@ public class AbstractFileStorage extends AbstractStorage<File> {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writable");
         }
         this.directory = directory;
-        this.strategy=strategy;
+        this.strategy = strategy;
     }
 
-    @Override
-    public void clear() {
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                subDelete(file);
-            }
-        }
-    }
-
-    @Override
-    public int size() {
-        String[] list = directory.list();
-        if (list == null) {
-            throw new StorageException("Directory read error", null);
-        }
-        return list.length;
-    }
 
     @Override
     protected File getKey(String uuid) {
@@ -92,14 +75,30 @@ public class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> getAll() {
+        List<Resume> list = new ArrayList<>(filesIsEmpty().length);
+        for (File file : filesIsEmpty()) {
+            list.add(subGet(file));
+        }
+        return list;
+    }
+
+    @Override
+    public void clear() {
+        for (File file : filesIsEmpty()) {
+            subDelete(file);
+        }
+    }
+
+    @Override
+    public int size() {
+        return filesIsEmpty().length;
+    }
+
+    private File[] filesIsEmpty() {
         File[] files = directory.listFiles();
         if (files == null) {
             throw new StorageException("Directory read error", null);
         }
-        List<Resume> list = new ArrayList<>(files.length);
-        for (File file : files) {
-            list.add(subGet(file));
-        }
-        return list;
+        return files;
     }
 }
