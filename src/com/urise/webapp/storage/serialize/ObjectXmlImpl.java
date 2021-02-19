@@ -1,4 +1,4 @@
-package com.urise.webapp.storage.strategyclass;
+package com.urise.webapp.storage.serialize;
 
 import com.urise.webapp.model.Resume;
 
@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class ObjectJsonImpl implements IOStrategy {
+public class ObjectXmlImpl implements IOStrategy {
 
     @Override
     public void writeObj(Resume r, OutputStream os) throws IOException {

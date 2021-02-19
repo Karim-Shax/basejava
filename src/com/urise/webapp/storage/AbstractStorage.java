@@ -35,7 +35,7 @@ public abstract class AbstractStorage<K> implements Storage {
     @Override
     public void update(Resume resume) {
         subUpdate(getKeyIfResumeExist(resume.getUuid()), resume);
-        LOG.info("Update " + resume);
+        LOG.info("Update " + resume.getUuid());
     }
 
     @Override
@@ -43,7 +43,7 @@ public abstract class AbstractStorage<K> implements Storage {
         K key = getKey(resume.getUuid());
         if (!checkKey(key)) {
             subSave(key, resume);
-            LOG.info("Save " + resume);
+            LOG.info("Save " + resume.getUuid());
         } else {
             throw new ExistStorageException(resume.getUuid());
         }

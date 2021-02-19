@@ -2,7 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
-import com.urise.webapp.storage.strategyclass.IOStrategy;
+import com.urise.webapp.storage.serialize.IOStrategy;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -30,7 +30,7 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected Path getKey(String uuid) {
-        return new File(directory.toFile(), uuid).toPath();
+        return directory.resolve(uuid);
     }
 
     @Override
@@ -75,28 +75,24 @@ public class PathStorage extends AbstractStorage<Path> {
 
     @Override
     protected List<Resume> getAll() {
-        return isEmptyFiles().map(this::subGet).collect(Collectors.toList());
+        return checkAndGetFileStream().map(this::subGet).collect(Collectors.toList());
     }
 
     @Override
     public void clear() {
-        isEmptyFiles().forEach(this::subDelete);
+        checkAndGetFileStream().forEach(this::subDelete);
     }
 
     @Override
     public int size() {
-        return isEmptyFiles().toArray().length;
+        return (int) checkAndGetFileStream().count();
     }
 
-    private Stream<Path> isEmptyFiles() {
+    private Stream<Path> checkAndGetFileStream() {
         try {
-            if (Files.list(directory) == null) {
-                throw new StorageException("Directory read error", null);
-            } else {
-                return Files.list(directory);
-            }
+            return Files.list(directory);
         } catch (IOException e) {
-            throw new StorageException("Path delete error", null);
+            throw new StorageException("Directory read error", null);
         }
     }
 }

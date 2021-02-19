@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Experience implements ProfessionalSkill {
+
     private static final long serialVersionUID = 1L;
     private final BaseInf homePage;
     private final List<PeriodPosition> list = new ArrayList<>();

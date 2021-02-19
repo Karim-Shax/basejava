@@ -2,7 +2,7 @@ package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
-import com.urise.webapp.storage.strategyclass.IOStrategy;
+import com.urise.webapp.storage.serialize.IOStrategy;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -75,8 +75,8 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> getAll() {
-        List<Resume> list = new ArrayList<>(filesIsEmpty().length);
-        for (File file : filesIsEmpty()) {
+        List<Resume> list = new ArrayList<>(checkAndGetFileList().length);
+        for (File file : checkAndGetFileList()) {
             list.add(subGet(file));
         }
         return list;
@@ -84,17 +84,17 @@ public class FileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-        for (File file : filesIsEmpty()) {
+        for (File file : checkAndGetFileList()) {
             subDelete(file);
         }
     }
 
     @Override
     public int size() {
-        return filesIsEmpty().length;
+        return checkAndGetFileList().length;
     }
 
-    private File[] filesIsEmpty() {
+    private File[] checkAndGetFileList() {
         File[] files = directory.listFiles();
         if (files == null) {
             throw new StorageException("Directory read error", null);

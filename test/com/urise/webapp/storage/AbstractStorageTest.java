@@ -24,7 +24,7 @@ public abstract class AbstractStorageTest {
     protected static final Resume RESUME_3 = ResumeTestData.defaultResume("uuid3", "Vasili");
     protected static final Resume RESUME_4 = ResumeTestData.defaultResume("uuid4", "Vasili");
 
-    public AbstractStorageTest(AbstractStorage storage) {
+    public AbstractStorageTest(Storage storage) {
         this.storage = storage;
     }
 

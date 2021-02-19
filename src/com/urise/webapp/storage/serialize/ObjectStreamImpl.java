@@ -1,11 +1,11 @@
-package com.urise.webapp.storage.strategyclass;
+package com.urise.webapp.storage.serialize;
 
 import com.urise.webapp.exception.StorageException;
 import com.urise.webapp.model.Resume;
 
 import java.io.*;
 
-public class ObjectStreamStorage implements IOStrategy {
+public class ObjectStreamImpl implements IOStrategy {
 
     @Override
     public void writeObj(Resume r, OutputStream os) throws IOException {

@@ -1,4 +1,4 @@
-package com.urise.webapp.storage.strategyclass;
+package com.urise.webapp.storage.serialize;
 
 import com.urise.webapp.model.Resume;
 
