@@ -1,20 +1,29 @@
 package com.urise.webapp.storage.serialize;
 
-import com.urise.webapp.model.Resume;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import com.urise.webapp.model.*;
+import com.urise.webapp.util.XmlParser;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 public class ObjectXmlImpl implements IOStrategy {
 
+    private XmlParser xmlParser;
+
+    public ObjectXmlImpl() {
+        this.xmlParser = new XmlParser(ListSection.class,TextSection.class,ProfessionalSkill.class,Resume.class, Certification.class, BaseInf.class, Experience.class, Experience.PeriodPosition.class);
+    }
+
     @Override
     public void writeObj(Resume r, OutputStream os) throws IOException {
-
+        try (Writer w = new OutputStreamWriter(os, StandardCharsets.UTF_8)) {
+            xmlParser.marshall(r, w);
+        }
     }
 
     @Override
     public Resume readObj(InputStream is) throws IOException {
-        return null;
+        try (Reader r = new InputStreamReader(is, StandardCharsets.UTF_8)) {
+            return xmlParser.unmarshall(r);
+        }
     }
 }

@@ -1,12 +1,20 @@
 package com.urise.webapp;
 
 import com.urise.webapp.model.*;
+import com.urise.webapp.storage.PathStorage;
+import com.urise.webapp.storage.serialize.ObjectDataImpl;
 
 import java.time.LocalDate;
 import java.util.*;
 
 public class ResumeTestData {
     public static void main(String[] args) {
+        Resume resume = defaultResume("uuid1", "name fullname");
+        PathStorage storage = new PathStorage("D:/base/basejava/storage", new ObjectDataImpl());
+        storage.clear();
+        storage.save(resume);
+        Resume resume1 = storage.get(resume.getUuid());
+        System.out.println(resume1.equals(resume));
     }
 
     //метод который принимает uuid и fullname возвращает заполненное резюме также используется в тестах SuitClass
@@ -20,15 +28,15 @@ public class ResumeTestData {
         List<Experience> eduction = new ArrayList<>();
 
 
-        EnumMap<ContactType, BaseInf> contacts = new EnumMap<>(ContactType.class);
+        EnumMap<ContactType, String> contacts = new EnumMap<>(ContactType.class);
         EnumMap<PersonInf, ProfessionalSkill> pesonInf = new EnumMap<>(PersonInf.class);
 
-        contacts.put(ContactType.PHONE, new BaseInf(ContactType.PHONE.getTitle(), "+7(921) 855-0482"));
-        contacts.put(ContactType.SKYPE, new BaseInf(ContactType.SKYPE.getTitle(), "grigory.kislin"));
-        contacts.put(ContactType.EMAIL, new BaseInf(ContactType.EMAIL.getTitle(), "gkislin@yandex.ru"));
-        contacts.put(ContactType.LINKEDIN, new BaseInf(ContactType.LINKEDIN.getTitle(), "https://www.linkedin.com/in/gkislin"));
-        contacts.put(ContactType.GITHUB, new BaseInf(ContactType.GITHUB.getTitle(), "https://github.com/gkislin"));
-        contacts.put(ContactType.STACKOVERFLOW, new BaseInf(ContactType.STACKOVERFLOW.getTitle(), "https://stackoverflow.com/users/548473/grigory-kislin"));
+        contacts.put(ContactType.PHONE, "+7(921) 855-0482");
+        contacts.put(ContactType.SKYPE, "grigory.kislin");
+        contacts.put(ContactType.EMAIL, "gkislin@yandex.ru");
+        contacts.put(ContactType.LINKEDIN, "https://www.linkedin.com/in/gkislin");
+        contacts.put(ContactType.GITHUB, "https://github.com/gkislin");
+        contacts.put(ContactType.STACKOVERFLOW, "https://stackoverflow.com/users/548473/grigory-kislin");
 
         first.setContacts(contacts);
 
@@ -111,20 +119,19 @@ public class ResumeTestData {
         eduction.add(new Experience("MFTI", null, LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1), MFTI, null));
 
         //пример добавления в место работы еще одну дату с описанием и позицией
-        Certification<Experience> cer = new Certification<>(eduction);
+        Certification cer = new Certification(eduction);
         cer.addExperience("MFTI", null, new Experience.PeriodPosition(MFTI, LocalDate.of(2020, 9, 1), LocalDate.of(2020, 6, 1), null));
 
-        pesonInf.put(PersonInf.PERSONAL, new BaseInf(PersonInf.PERSONAL.getTitle(), personal));
-        pesonInf.put(PersonInf.OBJECTIVE, new BaseInf(PersonInf.OBJECTIVE.getTitle(), objective));
-        pesonInf.put(PersonInf.ACHIEVEMENT, new Certification<>(archievement));
-        pesonInf.put(PersonInf.QUALIFICATIONS, new Certification<>(qualif));
-        pesonInf.put(PersonInf.EXPERIENCE, new Certification<>(experience));
+        pesonInf.put(PersonInf.PERSONAL, new TextSection(PersonInf.PERSONAL.getTitle() + " " + personal));
+        pesonInf.put(PersonInf.OBJECTIVE, new TextSection(PersonInf.OBJECTIVE.getTitle() + " " + objective));
+        pesonInf.put(PersonInf.ACHIEVEMENT, new ListSection(archievement));
+        pesonInf.put(PersonInf.QUALIFICATIONS, new ListSection(qualif));
+        pesonInf.put(PersonInf.EXPERIENCE, new Certification(experience));
         pesonInf.put(PersonInf.EDUCATION, cer);
 
         first.setInfo(pesonInf);
 
         return first;
     }
-
 
 }

@@ -1,16 +1,25 @@
 package com.urise.webapp.model;
 
+import com.urise.webapp.util.LocalDateAdapter;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class Experience implements ProfessionalSkill {
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Experience extends ProfessionalSkill {
 
     private static final long serialVersionUID = 1L;
-    private final BaseInf homePage;
-    private final List<PeriodPosition> list = new ArrayList<>();
+    private  BaseInf homePage;
+    private  List<PeriodPosition> list = new ArrayList<>();
+
+    public Experience() {
+    }
 
     public Experience(String name, String url, LocalDate startTime, LocalDate endTime, String title, String technologyNameVersion) {
         Objects.requireNonNull(startTime, "startTime must not be null");
@@ -25,6 +34,10 @@ public class Experience implements ProfessionalSkill {
         addPeriodPosition(position);
     }
 
+    public Experience(BaseInf homePage) {
+        this.homePage = homePage;
+    }
+
     public void addPeriodPosition(PeriodPosition position) {
         list.add(position);
     }
@@ -35,6 +48,10 @@ public class Experience implements ProfessionalSkill {
 
     public List<PeriodPosition> getList() {
         return list;
+    }
+
+    public void setList(List<PeriodPosition> list) {
+        this.list = list;
     }
 
     @Override
@@ -61,13 +78,18 @@ public class Experience implements ProfessionalSkill {
                 "homePage=\t" + homePage +
                 "list=\n" + list;
     }
-
+    @XmlAccessorType(XmlAccessType.FIELD)
     public static class PeriodPosition implements Serializable {
         private static final long serialVersionUID = 1L;
-        private final String title;
-        private final LocalDate startTime;
-        private final LocalDate endTime;
-        private final String technoLogyNameVersion;
+        private  String title;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        private  LocalDate startTime;
+        @XmlJavaTypeAdapter(LocalDateAdapter.class)
+        private  LocalDate endTime;
+        private  String technoLogyNameVersion;
+
+        public PeriodPosition() {
+        }
 
         public PeriodPosition(String title, LocalDate startTime, LocalDate endTime, String technologyNameVersion) {
             Objects.requireNonNull(startTime, "startTime must not be null");
@@ -77,6 +99,22 @@ public class Experience implements ProfessionalSkill {
             this.startTime = startTime;
             this.endTime = endTime;
             technoLogyNameVersion = technologyNameVersion;
+        }
+
+        public String getTitle() {
+            return title;
+        }
+
+        public LocalDate getStartTime() {
+            return startTime;
+        }
+
+        public LocalDate getEndTime() {
+            return endTime;
+        }
+
+        public String getTechnoLogyNameVersion() {
+            return technoLogyNameVersion;
         }
 
         @Override

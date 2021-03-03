@@ -8,6 +8,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,7 +19,7 @@ public class PathStorage extends AbstractStorage<Path> {
     private final Path directory;
     private final IOStrategy strategy;
 
-    protected PathStorage(String dir, IOStrategy strategy) {
+    public PathStorage(String dir, IOStrategy strategy) {
         directory = Paths.get(dir);
         Objects.requireNonNull(directory, "directory must not be null");
         Objects.requireNonNull(strategy, "io type must not be null");
@@ -36,7 +37,7 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected void subUpdate(Path path, Resume r) {
         try {
-            strategy.writeObj(r, new BufferedOutputStream(Files.newOutputStream(path)));
+            strategy.writeObj(r, new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.CREATE)));
         } catch (IOException e) {
             throw new StorageException("Path write error", r.getUuid());
         }
@@ -56,7 +57,7 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected Resume subGet(Path path) {
         try {
-            return strategy.readObj(new BufferedInputStream(Files.newInputStream(path)));
+            return strategy.readObj(new BufferedInputStream(Files.newInputStream(path,StandardOpenOption.READ)));
         } catch (IOException e) {
             throw new StorageException("Path read error", path.toFile().getName());
         }

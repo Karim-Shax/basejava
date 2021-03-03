@@ -1,34 +1,40 @@
 package com.urise.webapp.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.List;
 import java.util.Objects;
 
-public class Certification<T> implements ProfessionalSkill {
+@XmlAccessorType(XmlAccessType.FIELD)
+public class Certification extends ProfessionalSkill {
 
     private static final long serialVersionUID = 1L;
 
-    private final List<T> detail;
+    private List<Experience> detail;
 
-    public Certification(List<T> detail) {
-        Objects.requireNonNull(detail, "list most not be null");
-        this.detail = detail;
+    public Certification() {
     }
 
-    public List<T> getDetail() {
+    public List<Experience> getDetail() {
         return detail;
+    }
+
+    public Certification(List<Experience> detail) {
+        Objects.requireNonNull(detail, "list most not be null");
+        this.detail = detail;
     }
 
     public void addExperience(String name, String url, Experience.PeriodPosition position) {
         BaseInf inf = new BaseInf(name, url);
         boolean isExist = false;
-        for (Experience ex : (List<Experience>) detail) {
+        for (Experience ex :  detail) {
             if (inf.equals(ex.getHomePage())) {
                 ex.addPeriodPosition(position);
                 isExist = true;
             }
         }
         if (!isExist) {
-            detail.add((T) new Experience(inf, position));
+            detail.add(new Experience(inf, position));
         }
     }
 
@@ -37,7 +43,7 @@ public class Certification<T> implements ProfessionalSkill {
         if (this == o) return true;
         if (!(o instanceof Certification)) return false;
 
-        Certification<?> that = (Certification<?>) o;
+        Certification that = (Certification) o;
 
         return detail.equals(that.detail);
     }
@@ -49,8 +55,8 @@ public class Certification<T> implements ProfessionalSkill {
 
     @Override
     public String toString() {
-        return "Certification" +"\n"+
-                "detail=\n" + detail +
-                "\n";
+        return "Certification{" +
+                "detail=" + detail +
+                '}';
     }
 }

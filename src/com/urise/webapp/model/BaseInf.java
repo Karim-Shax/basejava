@@ -1,18 +1,25 @@
 package com.urise.webapp.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import java.io.Serializable;
 import java.util.Objects;
 
-public class BaseInf implements ProfessionalSkill {
+@XmlAccessorType(XmlAccessType.FIELD)
+public class BaseInf implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String title;
-    private final String urlText;
+    private String title;
+    private String urlText;
 
     public BaseInf(String title, String text) {
         Objects.requireNonNull(title, "title must not be null");
         this.title = title;
         this.urlText = text;
+    }
+
+    public BaseInf() {
     }
 
     public String getTitle() {
@@ -43,8 +50,9 @@ public class BaseInf implements ProfessionalSkill {
 
     @Override
     public String toString() {
-        return "\bBaseInf" + "\n" +
-                "title=\t\t" + title + "\n" +
-                "urlText=\t" + urlText + "\n";
+        return "BaseInf{" +
+                "title='" + title +
+                ", urlText='" + urlText +
+                "}\n";
     }
 }

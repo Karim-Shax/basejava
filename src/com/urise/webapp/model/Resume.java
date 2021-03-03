@@ -1,19 +1,27 @@
 package com.urise.webapp.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.*;
 
 /**
  * Initial resume class
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Resume implements Comparable<Resume>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String uuid;
-    private final String fullName;
-    private Map<ContactType, BaseInf> contacts;
+    private String uuid;
+    private String fullName;
+    private Map<ContactType, String> contacts;
     private Map<PersonInf, ProfessionalSkill> info;
+
+    public Resume() {
+    }
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -24,22 +32,23 @@ public class Resume implements Comparable<Resume>, Serializable {
         Objects.requireNonNull(fullName, "fullName must not be null");
         this.uuid = uuid;
         this.fullName = fullName;
+        contacts = new EnumMap<ContactType, String>(ContactType.class);
+    }
+
+    public Map<PersonInf, ProfessionalSkill> getInfo() {
+        return info;
     }
 
     public void setInfo(EnumMap<PersonInf, ProfessionalSkill> info) {
         this.info = info;
     }
 
-    public Map<ContactType, BaseInf> getContacts() {
+    public Map<ContactType, String> getContacts() {
         return contacts;
     }
 
-    public void setContacts(EnumMap<ContactType, BaseInf> contacts) {
+    public void setContacts(EnumMap<ContactType, String> contacts) {
         this.contacts = contacts;
-    }
-
-    public Map<PersonInf, ProfessionalSkill> getInfo() {
-        return info;
     }
 
     public String getFullName() {
@@ -50,7 +59,11 @@ public class Resume implements Comparable<Resume>, Serializable {
         return uuid;
     }
 
-    public BaseInf getCont(ContactType type) {
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getCont(ContactType type) {
         return contacts.get(type);
     }
 
@@ -93,5 +106,9 @@ public class Resume implements Comparable<Resume>, Serializable {
     @Override
     public int compareTo(Resume o) {
         return uuid.compareTo(o.uuid);
+    }
+
+    public void addContact(ContactType valueOf, String readUTF) {
+        contacts.put(valueOf, readUTF);
     }
 }
