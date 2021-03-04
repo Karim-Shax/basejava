@@ -5,5 +5,5 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import java.io.Serializable;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ProfessionalSkill implements Serializable {
+public class Section implements Serializable {
 }

@@ -2,48 +2,53 @@ package com.urise.webapp.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Certification extends ProfessionalSkill {
+public class OrganizationSection extends Section {
 
     private static final long serialVersionUID = 1L;
 
-    private List<Experience> detail;
+    private List<Organization> detail;
 
-    public Certification() {
+    public OrganizationSection() {
     }
 
-    public List<Experience> getDetail() {
-        return detail;
+    public OrganizationSection(Organization... organizations) {
+        this(Arrays.asList(organizations));
     }
 
-    public Certification(List<Experience> detail) {
+    public OrganizationSection(List<Organization> detail) {
         Objects.requireNonNull(detail, "list most not be null");
         this.detail = detail;
     }
 
-    public void addExperience(String name, String url, Experience.PeriodPosition position) {
-        BaseInf inf = new BaseInf(name, url);
+    public List<Organization> getDetail() {
+        return detail;
+    }
+
+    public void addExperience(String name, String url, Organization.Period position) {
+        Link inf = new Link(name, url);
         boolean isExist = false;
-        for (Experience ex :  detail) {
+        for (Organization ex : detail) {
             if (inf.equals(ex.getHomePage())) {
                 ex.addPeriodPosition(position);
                 isExist = true;
             }
         }
         if (!isExist) {
-            detail.add(new Experience(inf, position));
+            detail.add(new Organization(inf, position));
         }
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Certification)) return false;
+        if (!(o instanceof OrganizationSection)) return false;
 
-        Certification that = (Certification) o;
+        OrganizationSection that = (OrganizationSection) o;
 
         return detail.equals(that.detail);
     }
@@ -55,8 +60,8 @@ public class Certification extends ProfessionalSkill {
 
     @Override
     public String toString() {
-        return "Certification{" +
-                "detail=" + detail +
+        return "OrganizationSection{" +
+                "detail=" + detail.toString() +
                 '}';
     }
 }

@@ -10,7 +10,7 @@ public class ObjectXmlImpl implements IOStrategy {
     private XmlParser xmlParser;
 
     public ObjectXmlImpl() {
-        this.xmlParser = new XmlParser(ListSection.class,TextSection.class,ProfessionalSkill.class,Resume.class, Certification.class, BaseInf.class, Experience.class, Experience.PeriodPosition.class);
+        this.xmlParser = new XmlParser(ListSection.class,TextSection.class, Section.class,Resume.class, OrganizationSection.class, Link.class, Organization.class, Organization.Period.class);
     }
 
     @Override

@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ListSection extends ProfessionalSkill {
+public class ListSection extends Section {
 
     private static final long serialVersionUID = 1L;
 

@@ -12,54 +12,55 @@ import java.util.List;
 import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Experience extends ProfessionalSkill {
+public class Organization extends Section {
 
     private static final long serialVersionUID = 1L;
-    private  BaseInf homePage;
-    private  List<PeriodPosition> list = new ArrayList<>();
+    private Link homePage;
+    private  List<Period> list = new ArrayList<>();
 
-    public Experience() {
+    public Organization() {
+
     }
 
-    public Experience(String name, String url, LocalDate startTime, LocalDate endTime, String title, String technologyNameVersion) {
+    public Organization(String name, String url, LocalDate startTime, LocalDate endTime, String title, String technologyNameVersion) {
         Objects.requireNonNull(startTime, "startTime must not be null");
         Objects.requireNonNull(endTime, "endTime must not be null");
         Objects.requireNonNull(title, "title must not be null");
-        this.homePage = new BaseInf(name, url);
-        addPeriodPosition(new PeriodPosition(title, startTime, endTime, technologyNameVersion));
+        this.homePage = new Link(name, url);
+        addPeriodPosition(new Period(title, startTime, endTime, technologyNameVersion));
     }
 
-    public Experience(BaseInf homePage, PeriodPosition position) {
+    public Organization(Link homePage, Period position) {
         this.homePage = homePage;
         addPeriodPosition(position);
     }
 
-    public Experience(BaseInf homePage) {
+    public Organization(Link homePage) {
         this.homePage = homePage;
     }
 
-    public void addPeriodPosition(PeriodPosition position) {
+    public void addPeriodPosition(Period position) {
         list.add(position);
     }
 
-    public BaseInf getHomePage() {
+    public Link getHomePage() {
         return homePage;
     }
 
-    public List<PeriodPosition> getList() {
+    public List<Period> getList() {
         return list;
     }
 
-    public void setList(List<PeriodPosition> list) {
+    public void setList(List<Period> list) {
         this.list = list;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Experience)) return false;
+        if (!(o instanceof Organization)) return false;
 
-        Experience that = (Experience) o;
+        Organization that = (Organization) o;
 
         if (!homePage.equals(that.homePage)) return false;
         return list.equals(that.list);
@@ -74,12 +75,12 @@ public class Experience extends ProfessionalSkill {
 
     @Override
     public String toString() {
-        return "\nExperience" + "\n" +
+        return "\nOrganization" + "\n" +
                 "homePage=\t" + homePage +
                 "list=\n" + list;
     }
     @XmlAccessorType(XmlAccessType.FIELD)
-    public static class PeriodPosition implements Serializable {
+    public static class Period implements Serializable {
         private static final long serialVersionUID = 1L;
         private  String title;
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
@@ -88,10 +89,10 @@ public class Experience extends ProfessionalSkill {
         private  LocalDate endTime;
         private  String technoLogyNameVersion;
 
-        public PeriodPosition() {
+        public Period() {
         }
 
-        public PeriodPosition(String title, LocalDate startTime, LocalDate endTime, String technologyNameVersion) {
+        public Period(String title, LocalDate startTime, LocalDate endTime, String technologyNameVersion) {
             Objects.requireNonNull(startTime, "startTime must not be null");
             Objects.requireNonNull(endTime, "endTime must not be null");
             Objects.requireNonNull(title, "title must not be null");
@@ -120,9 +121,9 @@ public class Experience extends ProfessionalSkill {
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
-            if (!(o instanceof PeriodPosition)) return false;
+            if (!(o instanceof Period)) return false;
 
-            PeriodPosition that = (PeriodPosition) o;
+            Period that = (Period) o;
 
             if (!title.equals(that.title)) return false;
             if (!startTime.equals(that.startTime)) return false;
@@ -141,7 +142,7 @@ public class Experience extends ProfessionalSkill {
 
         @Override
         public String toString() {
-            return "PeriodPosition" + "\n" +
+            return "Period" + "\n" +
                     "title=\t\t" + title + "\n" +
                     "startTime=\t" + startTime + "\n" +
                     "endTime=\t" + endTime + "\n" +

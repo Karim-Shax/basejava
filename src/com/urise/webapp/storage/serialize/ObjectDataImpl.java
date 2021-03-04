@@ -18,12 +18,11 @@ public class ObjectDataImpl implements IOStrategy {
                 dos.writeUTF(entry.getKey().name());
                 dos.writeUTF(entry.getValue());
             }
-            Map<PersonInf, ProfessionalSkill> info = r.getInfo();
+            Map<SectionType, Section> info = r.getInfo();
             dos.writeInt(info.size());
-            info.entrySet().forEach(x -> {
+            info.forEach((key, skill) -> {
                 try {
-                    dos.writeUTF(x.getKey().name());
-                    ProfessionalSkill skill = x.getValue();
+                    dos.writeUTF(key.name());
                     writeModelField(skill, dos);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -32,7 +31,7 @@ public class ObjectDataImpl implements IOStrategy {
         }
     }
 
-    private void writeModelField(ProfessionalSkill skill, DataOutputStream dos) throws IOException {
+    private void writeModelField(Section skill, DataOutputStream dos) throws IOException {
         String[] classs = skill.getClass().getName().split("\\.");
         dos.writeUTF(classs[classs.length - 1]);
         switch (classs[classs.length - 1]) {
@@ -47,23 +46,23 @@ public class ObjectDataImpl implements IOStrategy {
                     dos.writeUTF(str);
                 }
                 break;
-            case "Certification":
-                Certification certification = (Certification) skill;
-                dos.writeInt(certification.getDetail().size());
-                for (Experience ex : certification.getDetail()) {
+            case "OrganizationSection":
+                OrganizationSection organizationSection = (OrganizationSection) skill;
+                dos.writeInt(organizationSection.getDetail().size());
+                for (Organization ex : organizationSection.getDetail()) {
                     writeModelField(ex, dos);
                 }
                 break;
-            case "Experience":
-                Experience experience = (Experience) skill;
-                dos.writeUTF(experience.getHomePage().getTitle());
-                if (experience.getHomePage().getUrlText() == null) {
+            case "Organization":
+                Organization organization = (Organization) skill;
+                dos.writeUTF(organization.getHomePage().getTitle());
+                if (organization.getHomePage().getUrl() == null) {
                     dos.writeUTF("null");
                 } else {
-                    dos.writeUTF(experience.getHomePage().getUrlText());
+                    dos.writeUTF(organization.getHomePage().getUrl());
                 }
-                dos.writeInt(experience.getList().size());
-                for (Experience.PeriodPosition per : experience.getList()) {
+                dos.writeInt(organization.getList().size());
+                for (Organization.Period per : organization.getList()) {
                     dos.writeUTF(per.getTitle());
                     dos.writeInt(per.getStartTime().getYear());
                     dos.writeInt(per.getStartTime().getMonth().getValue());
@@ -98,17 +97,17 @@ public class ObjectDataImpl implements IOStrategy {
     }
 
 
-    private EnumMap<PersonInf, ProfessionalSkill> readModelMap(DataInputStream is, int size) throws IOException {
-        EnumMap<PersonInf, ProfessionalSkill> map = new EnumMap<>(PersonInf.class);
+    private EnumMap<SectionType, Section> readModelMap(DataInputStream is, int size) throws IOException {
+        EnumMap<SectionType, Section> map = new EnumMap<>(SectionType.class);
         for (int i = 0; i < size; i++) {
-            map.put(PersonInf.valueOf(is.readUTF()), readSkill(is));
+            map.put(SectionType.valueOf(is.readUTF()), readSkill(is));
         }
         return map;
     }
 
-    private ProfessionalSkill readSkill(DataInputStream is) throws IOException {
+    private Section readSkill(DataInputStream is) throws IOException {
         String skillName = is.readUTF();
-        ProfessionalSkill skill = null;
+        Section skill = null;
         switch (skillName) {
             case "TextSection":
                 skill = new TextSection(is.readUTF());
@@ -121,24 +120,23 @@ public class ObjectDataImpl implements IOStrategy {
                 }
                 skill = new ListSection(text);
                 break;
-            case "Certification":
+            case "OrganizationSection":
                 int size1 = is.readInt();
-                List<Experience> experiences = new ArrayList<>();
+                List<Organization> organizations = new ArrayList<>();
                 for (int i = 0; i < size1; i++) {
-                    experiences.add((Experience) readSkill(is));
+                    organizations.add((Organization) readSkill(is));
                 }
-
-                skill = new Certification(experiences);
+                skill = new OrganizationSection(organizations);
                 break;
-            case "Experience":
+            case "Organization":
                 String title = is.readUTF();
                 String urlBaseInf = is.readUTF();
                 if (urlBaseInf.equals("null")) {
                     urlBaseInf = null;
                 }
-                BaseInf inf = new BaseInf(title, urlBaseInf);
+                Link inf = new Link(title, urlBaseInf);
                 int size2 = is.readInt();
-                Experience experience = new Experience(inf);
+                Organization organization = new Organization(inf);
                 for (int i = 0; i < size2; i++) {
                     String url = is.readUTF();
                     LocalDate startDate = LocalDate.of(is.readInt(), is.readInt(), is.readInt());
@@ -147,15 +145,14 @@ public class ObjectDataImpl implements IOStrategy {
                     if (techVersion.equals("null")) {
                         techVersion = null;
                     }
-                    experience.addPeriodPosition(new Experience.PeriodPosition(
+                    organization.addPeriodPosition(new Organization.Period(
                             url,
                             startDate,
                             endDate,
                             techVersion
-
                     ));
                 }
-                skill = experience;
+                skill = organization;
                 break;
         }
         return skill;

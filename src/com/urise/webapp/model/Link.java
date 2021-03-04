@@ -6,53 +6,53 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @XmlAccessorType(XmlAccessType.FIELD)
-public class BaseInf implements Serializable {
+public class Link implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private String title;
-    private String urlText;
+    private String url;
 
-    public BaseInf(String title, String text) {
+    public Link(String title, String text) {
         Objects.requireNonNull(title, "title must not be null");
         this.title = title;
-        this.urlText = text;
+        this.url = text;
     }
 
-    public BaseInf() {
+    public Link() {
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getUrlText() {
-        return urlText;
+    public String getUrl() {
+        return url;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof BaseInf)) return false;
+        if (!(o instanceof Link)) return false;
 
-        BaseInf baseInf = (BaseInf) o;
+        Link link = (Link) o;
 
-        if (!title.equals(baseInf.title)) return false;
-        return Objects.equals(urlText, baseInf.urlText);
+        if (!title.equals(link.title)) return false;
+        return Objects.equals(url, link.url);
     }
 
     @Override
     public int hashCode() {
         int result = title.hashCode();
-        result = 31 * result + (urlText != null ? urlText.hashCode() : 0);
+        result = 31 * result + (url != null ? url.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "BaseInf{" +
+        return "Link{" +
                 "title='" + title +
-                ", urlText='" + urlText +
+                ", url='" + url +
                 "}\n";
     }
 }
