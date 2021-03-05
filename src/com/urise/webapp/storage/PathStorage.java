@@ -37,7 +37,7 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected void subUpdate(Path path, Resume r) {
         try {
-            strategy.writeObj(r, new BufferedOutputStream(Files.newOutputStream(path, StandardOpenOption.CREATE)));
+            strategy.writeObj(r, new BufferedOutputStream(Files.newOutputStream(path)));
         } catch (IOException e) {
             throw new StorageException("Path write error", r.getUuid());
         }
@@ -57,7 +57,7 @@ public class PathStorage extends AbstractStorage<Path> {
     @Override
     protected Resume subGet(Path path) {
         try {
-            return strategy.readObj(new BufferedInputStream(Files.newInputStream(path,StandardOpenOption.READ)));
+            return strategy.readObj(new BufferedInputStream(Files.newInputStream(path)));
         } catch (IOException e) {
             throw new StorageException("Path read error", path.toFile().getName());
         }
