@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class ObjectDataImpl implements IOStrategy {
+
     @Override
     public void writeObj(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
@@ -14,19 +15,15 @@ public class ObjectDataImpl implements IOStrategy {
             dos.writeUTF(r.getFullName());
             Map<ContactType, String> contacts = r.getContacts();
             dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
-                dos.writeUTF(entry.getKey().name());
-                dos.writeUTF(entry.getValue());
-            }
+            forEachWithExMap(contacts, (k, v) -> {
+                dos.writeUTF(k.name());
+                dos.writeUTF(v);
+            });
             Map<SectionType, Section> info = r.getInfo();
             dos.writeInt(info.size());
-            info.forEach((key, skill) -> {
-                try {
-                    dos.writeUTF(key.name());
-                    writeSection(skill, dos);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            forEachWithExMap(info, (k, v) -> {
+                dos.writeUTF(k.name());
+                writeSection(v, dos);
             });
         }
     }
@@ -42,16 +39,12 @@ public class ObjectDataImpl implements IOStrategy {
             case "ListSection":
                 ListSection section1 = (ListSection) sectionArg;
                 dos.writeInt(section1.getItems().size());
-                for (String str : section1.getItems()) {
-                    dos.writeUTF(str);
-                }
+                forEachWithExList(section1.getItems(), dos::writeUTF);
                 break;
             case "OrganizationSection":
                 OrganizationSection organizationSection = (OrganizationSection) sectionArg;
                 dos.writeInt(organizationSection.getDetail().size());
-                for (Organization ex : organizationSection.getDetail()) {
-                    writeSection(ex, dos);
-                }
+                forEachWithExList(organizationSection.getDetail(),(s)-> writeSection(s, dos));
                 break;
             case "Organization":
                 Organization organization = (Organization) sectionArg;
@@ -60,14 +53,14 @@ public class ObjectDataImpl implements IOStrategy {
                 String text = url == null ? "null" : url;
                 dos.writeUTF(text);
                 dos.writeInt(organization.getList().size());
-                for (Organization.Period per : organization.getList()) {
+                forEachWithExList(organization.getList(),(per)->{
                     dos.writeUTF(per.getTitle());
                     writeDate(dos, per.getStartTime());
                     writeDate(dos, per.getEndTime());
                     String techNVersion = per.getTechnoLogyNameVersion();
                     String value = techNVersion == null ? "null" : techNVersion;
                     dos.writeUTF(value);
-                }
+                });
                 break;
         }
     }
@@ -157,4 +150,39 @@ public class ObjectDataImpl implements IOStrategy {
     public LocalDate readDate(DataInputStream is) throws IOException {
         return LocalDate.of(is.readInt(), is.readInt(), is.readInt());
     }
+
+
+    //custom map foreach method with throwing Exception
+    public <K, V> void forEachWithExMap(Map<K, V> map, KeyValue<K, V> action) throws IOException {
+        Objects.requireNonNull(map);
+        Objects.requireNonNull(action);
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            K k;
+            V v;
+            try {
+                k = entry.getKey();
+                v = entry.getValue();
+            } catch (IllegalStateException ise) {
+                throw new ConcurrentModificationException(ise);
+            }
+            action.loop(k, v);
+        }
+    }
+    //custom Collection foreach method with throwing Exception
+    public <T> void forEachWithExList(Collection<T> list, Item<T> action) throws IOException {
+        Objects.requireNonNull(list);
+        Objects.requireNonNull(action);
+        for (T s : list) {
+            action.function(s);
+        }
+    }
 }
+//custom func interface Customer with throwing Exception
+interface Item<T> {
+    void function(T t) throws IOException;
+}
+//custom func interface BiConsumer with throwing Exception
+interface KeyValue<K, V> {
+    void loop(K k, V v) throws IOException;
+}
+
