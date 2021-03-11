@@ -8,13 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
-import java.util.EnumMap;
 import java.util.List;
 
 public abstract class AbstractStorageTest {
@@ -108,7 +105,4 @@ public abstract class AbstractStorageTest {
     public void deleteExceptionTest() {
         storage.delete(RESUME_4.getUuid());
     }
-
-
-
 }

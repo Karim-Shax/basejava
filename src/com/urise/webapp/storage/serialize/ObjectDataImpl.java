@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class ObjectDataImpl implements IOStrategy {
-
     @Override
     public void writeObj(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
@@ -15,57 +14,62 @@ public class ObjectDataImpl implements IOStrategy {
             dos.writeUTF(r.getFullName());
             Map<ContactType, String> contacts = r.getContacts();
             dos.writeInt(contacts.size());
-            forEachWithExMap(contacts, (k, v) -> {
-                dos.writeUTF(k.name());
-                dos.writeUTF(v);
-            });
+            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+                dos.writeUTF(entry.getKey().name());
+                dos.writeUTF(entry.getValue());
+            }
             Map<SectionType, Section> info = r.getInfo();
             dos.writeInt(info.size());
-            forEachWithExMap(info, (k, v) -> {
-                dos.writeUTF(k.name());
-                writeSection(v, dos);
-            });
+            for (Map.Entry<SectionType, Section> entry : info.entrySet()) {
+                dos.writeUTF(entry.getKey().name());
+                writeSection(entry.getKey(), entry.getValue(), dos);
+            }
         }
     }
 
-    private void writeSection(Section sectionArg, DataOutputStream dos) throws IOException {
-        String[] classs = sectionArg.getClass().getName().split("\\.");
-        dos.writeUTF(classs[classs.length - 1]);
-        switch (classs[classs.length - 1]) {
-            case "TextSection":
-                TextSection section = (TextSection) sectionArg;
-                dos.writeUTF(section.getText());
+    private void writeSection(SectionType sectionType, Section sectionArg, DataOutputStream dos) throws IOException {
+        switch (sectionType) {
+            case PERSONAL:
+            case OBJECTIVE:
+                TextSection section1 = (TextSection) sectionArg;
+                dos.writeUTF(section1.getText());
                 break;
-            case "ListSection":
-                ListSection section1 = (ListSection) sectionArg;
-                dos.writeInt(section1.getItems().size());
-                forEachWithExList(section1.getItems(), dos::writeUTF);
+            case ACHIEVEMENT:
+            case QUALIFICATIONS:
+                ListSection section3 = (ListSection) sectionArg;
+                dos.writeInt(section3.getItems().size());
+                for (String str : section3.getItems()) {
+                    dos.writeUTF(str);
+                }
                 break;
-            case "OrganizationSection":
+            case EXPERIENCE:
+            case EDUCATION:
                 OrganizationSection organizationSection = (OrganizationSection) sectionArg;
                 dos.writeInt(organizationSection.getDetail().size());
-                forEachWithExList(organizationSection.getDetail(),(s)-> writeSection(s, dos));
-                break;
-            case "Organization":
-                Organization organization = (Organization) sectionArg;
-                dos.writeUTF(organization.getHomePage().getTitle());
-                String url = organization.getHomePage().getUrl();
-                String text = url == null ? "null" : url;
-                dos.writeUTF(text);
-                dos.writeInt(organization.getList().size());
-                forEachWithExList(organization.getList(),(per)->{
-                    dos.writeUTF(per.getTitle());
-                    writeDate(dos, per.getStartTime());
-                    writeDate(dos, per.getEndTime());
-                    String techNVersion = per.getTechnoLogyNameVersion();
-                    String value = techNVersion == null ? "null" : techNVersion;
-                    dos.writeUTF(value);
-                });
+                for (Organization organization : organizationSection.getDetail()) {
+                    writeOrganization(organization, dos);
+                }
                 break;
         }
     }
 
-    public void writeDate(DataOutputStream dos, LocalDate date) throws IOException {
+    private void writeOrganization(Organization organization, DataOutputStream dos) throws IOException {
+        dos.writeUTF(organization.getHomePage().getTitle());
+        String url = organization.getHomePage().getUrl();
+        String text = url == null ? "null" : url;
+        dos.writeUTF(text);
+        dos.writeInt(organization.getList().size());
+        for (Organization.Period per : organization.getList()) {
+            dos.writeUTF(per.getTitle());
+            writeDate(dos, per.getStartTime());
+            writeDate(dos, per.getEndTime());
+            String techNVersion = per.getTechnoLogyNameVersion();
+            String value = techNVersion == null ? "null" : techNVersion;
+            dos.writeUTF(value);
+        }
+    }
+
+    private void writeDate(DataOutputStream dos, LocalDate date) throws IOException {
         dos.writeInt(date.getYear());
         dos.writeInt(date.getMonth().getValue());
         dos.writeInt(date.getDayOfMonth());
@@ -87,23 +91,24 @@ public class ObjectDataImpl implements IOStrategy {
         }
     }
 
-
     private EnumMap<SectionType, Section> readSections(DataInputStream is, int size) throws IOException {
         EnumMap<SectionType, Section> map = new EnumMap<>(SectionType.class);
         for (int i = 0; i < size; i++) {
-            map.put(SectionType.valueOf(is.readUTF()), readSection(is));
+            SectionType sectionType = SectionType.valueOf(is.readUTF());
+            map.put(sectionType, readSection(sectionType, is));
         }
         return map;
     }
 
-    private Section readSection(DataInputStream is) throws IOException {
-        String section = is.readUTF();
+    private Section readSection(SectionType sectionType, DataInputStream is) throws IOException {
         Section skill = null;
-        switch (section) {
-            case "TextSection":
+        switch (sectionType) {
+            case PERSONAL:
+            case OBJECTIVE:
                 skill = new TextSection(is.readUTF());
                 break;
-            case "ListSection":
+            case ACHIEVEMENT:
+            case QUALIFICATIONS:
                 int size = is.readInt();
                 List<String> text = new ArrayList<>();
                 for (int i = 0; i < size; i++) {
@@ -111,78 +116,44 @@ public class ObjectDataImpl implements IOStrategy {
                 }
                 skill = new ListSection(text);
                 break;
-            case "OrganizationSection":
+            case EXPERIENCE:
+            case EDUCATION:
                 int size1 = is.readInt();
                 List<Organization> organizations = new ArrayList<>();
                 for (int i = 0; i < size1; i++) {
-                    organizations.add((Organization) readSection(is));
+                    organizations.add((Organization) readOrganization(is));
                 }
                 skill = new OrganizationSection(organizations);
-                break;
-            case "Organization":
-                String title = is.readUTF();
-                String value = is.readUTF();
-                String urlBaseInf = value.equals("null") ? null : value;
-                Link inf = new Link(title, urlBaseInf);
-                int size2 = is.readInt();
-                Organization organization = new Organization(inf);
-                for (int i = 0; i < size2; i++) {
-                    String url = is.readUTF();
-                    LocalDate startDate = readDate(is);
-                    LocalDate endDate = readDate(is);
-                    String techVersion = is.readUTF();
-                    if (techVersion.equals("null")) {
-                        techVersion = null;
-                    }
-                    organization.addPeriodPosition(new Organization.Period(
-                            url,
-                            startDate,
-                            endDate,
-                            techVersion
-                    ));
-                }
-                skill = organization;
                 break;
         }
         return skill;
     }
 
-    public LocalDate readDate(DataInputStream is) throws IOException {
+    private Section readOrganization(DataInputStream is) throws IOException {
+        String title = is.readUTF();
+        String value = is.readUTF();
+        String urlBaseInf = value.equals("null") ? null : value;
+        Link inf = new Link(title, urlBaseInf);
+        int size2 = is.readInt();
+        Organization organization = new Organization(inf);
+        for (int i = 0; i < size2; i++) {
+            String url = is.readUTF();
+            LocalDate startDate = readDate(is);
+            LocalDate endDate = readDate(is);
+            String techVersion = is.readUTF();
+            if (techVersion.equals("null")) {
+                techVersion = null;
+            }
+            organization.addPeriodPosition(new Organization.Period(
+                    url,
+                    startDate,
+                    endDate,
+                    techVersion
+            ));
+        }
+        return organization;
+    }
+    private LocalDate readDate(DataInputStream is) throws IOException {
         return LocalDate.of(is.readInt(), is.readInt(), is.readInt());
     }
-
-
-    //custom map foreach method with throwing Exception
-    public <K, V> void forEachWithExMap(Map<K, V> map, KeyValue<K, V> action) throws IOException {
-        Objects.requireNonNull(map);
-        Objects.requireNonNull(action);
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            K k;
-            V v;
-            try {
-                k = entry.getKey();
-                v = entry.getValue();
-            } catch (IllegalStateException ise) {
-                throw new ConcurrentModificationException(ise);
-            }
-            action.loop(k, v);
-        }
-    }
-    //custom Collection foreach method with throwing Exception
-    public <T> void forEachWithExList(Collection<T> list, Item<T> action) throws IOException {
-        Objects.requireNonNull(list);
-        Objects.requireNonNull(action);
-        for (T s : list) {
-            action.function(s);
-        }
-    }
 }
-//custom func interface Customer with throwing Exception
-interface Item<T> {
-    void function(T t) throws IOException;
-}
-//custom func interface BiConsumer with throwing Exception
-interface KeyValue<K, V> {
-    void loop(K k, V v) throws IOException;
-}
-
