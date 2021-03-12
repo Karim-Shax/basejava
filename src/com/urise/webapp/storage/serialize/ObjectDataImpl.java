@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 public class ObjectDataImpl implements IOStrategy {
+
     @Override
     public void writeObj(Resume r, OutputStream os) throws IOException {
         try (DataOutputStream dos = new DataOutputStream(os)) {
@@ -31,22 +32,23 @@ public class ObjectDataImpl implements IOStrategy {
         switch (sectionType) {
             case PERSONAL:
             case OBJECTIVE:
-                TextSection section1 = (TextSection) sectionArg;
-                dos.writeUTF(section1.getText());
+                dos.writeUTF(((TextSection)sectionArg).getText());
                 break;
             case ACHIEVEMENT:
             case QUALIFICATIONS:
                 ListSection section3 = (ListSection) sectionArg;
-                dos.writeInt(section3.getItems().size());
-                for (String str : section3.getItems()) {
+                List<String> items=section3.getItems();
+                dos.writeInt(items.size());
+                for (String str : items) {
                     dos.writeUTF(str);
                 }
                 break;
             case EXPERIENCE:
             case EDUCATION:
                 OrganizationSection organizationSection = (OrganizationSection) sectionArg;
-                dos.writeInt(organizationSection.getDetail().size());
-                for (Organization organization : organizationSection.getDetail()) {
+                List<Organization> organizations=organizationSection.getDetail();
+                dos.writeInt(organizations.size());
+                for (Organization organization : organizations) {
                     writeOrganization(organization, dos);
                 }
                 break;
@@ -153,6 +155,7 @@ public class ObjectDataImpl implements IOStrategy {
         }
         return organization;
     }
+
     private LocalDate readDate(DataInputStream is) throws IOException {
         return LocalDate.of(is.readInt(), is.readInt(), is.readInt());
     }
