@@ -2,33 +2,36 @@ package com.urise.webapp;
 
 
 public class MainConcurrency {
-    private static final Object LOCK = new Object();
-    private static final Object LOCK2 = new Object();
 
     public static void main(String[] args) {
-        final MainConcurrency mainConcurrency = new MainConcurrency();
-
-        /*DEAD LOCK*/
-        Thread thread = new Thread(() -> {
-            synchronized (mainConcurrency.LOCK) {
-                System.out.println("Lock1");
-                synchronized (mainConcurrency.LOCK2) {
-                    System.out.println("Lock2");
-//lock                   mainConcurrency.LOCK2.notify();
+        Object lock = new Object();
+        Object lock2 = new Object();
+        for (int i = 0; i < 3; i++) {
+            new Thread(() -> {
+                synchronized (lock) {
+                    try {
+                        lock.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    synchronized (lock2) {
+                        lock.notify();
+                    }
                 }
-            }
-        });
 
-        Thread thread2 = new Thread(() -> {
-            synchronized (mainConcurrency.LOCK2) {
-                System.out.println("Lock2");
-                synchronized (mainConcurrency.LOCK) {
-                    System.out.println("Lock1");
+            }).start();
+            new Thread(() -> {
+                synchronized (lock2) {
+                    try {
+                        lock2.wait();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    synchronized (lock) {
+                        lock2.notify();
+                    }
                 }
-            }
-        });
-
-        thread.start();
-        thread2.start();
+            }).start();
+        }
     }
 }
