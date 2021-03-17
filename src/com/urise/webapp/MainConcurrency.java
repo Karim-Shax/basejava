@@ -6,32 +6,22 @@ public class MainConcurrency {
     public static void main(String[] args) {
         Object lock = new Object();
         Object lock2 = new Object();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             new Thread(() -> {
-                synchronized (lock) {
-                    try {
-                        lock.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    synchronized (lock2) {
-                        lock.notify();
-                    }
-                }
+                deadLock(lock, lock2);
+            }).start();
+            new Thread(() -> {
+                deadLock(lock2, lock);
+            }).start();
+        }
+    }
 
-            }).start();
-            new Thread(() -> {
-                synchronized (lock2) {
-                    try {
-                        lock2.wait();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    synchronized (lock) {
-                        lock2.notify();
-                    }
-                }
-            }).start();
+    public static void deadLock(Object obj, Object obj2) {
+        synchronized (obj) {
+                System.out.println(Thread.currentThread().getName() + " захватил " + obj.toString() + ", ждет освобождения " + obj2.toString());
+            synchronized (obj2) {
+                System.out.println(Thread.currentThread().getName() + " захватил " + obj2.toString());
+            }
         }
     }
 }
