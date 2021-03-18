@@ -8,24 +8,20 @@ public class MainConcurrency {
         Object lock2 = new Object();
 
         new Thread(() -> {
-            try {
-                deadLock(lock, lock2);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            deadLock(lock, lock2);
         }).start();
         new Thread(() -> {
-            try {
-                deadLock(lock2, lock);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            deadLock(lock2, lock);
         }).start();
     }
 
-    public static void deadLock(Object obj, Object obj2) throws InterruptedException {
+    public static void deadLock(Object obj, Object obj2) {
         synchronized (obj) {
-            obj.wait(100);
+            try {
+                obj.wait(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             System.out.println(Thread.currentThread().getName() + " blocked " + obj.toString() + ", waiting for release " + obj2.toString());
             synchronized (obj2) {
                 obj.notify();
