@@ -17,15 +17,16 @@ public class MainConcurrency {
 
     public static void deadLock(Object obj, Object obj2) {
         synchronized (obj) {
+            String name = Thread.currentThread().getName();
+            String toStr = obj2.toString();
             try {
-                obj.wait(100);
+                Thread.sleep(100);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(Thread.currentThread().getName() + " blocked " + obj.toString() + ", waiting for release " + obj2.toString());
+            System.out.println(name + " blocked " + obj.toString() + ", waiting for release " + toStr);
             synchronized (obj2) {
-                obj.notify();
-                System.out.println(Thread.currentThread().getName() + " blocked " + obj2.toString());
+                System.out.println(name + " blocked " + toStr);
             }
         }
     }
