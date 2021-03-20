@@ -11,25 +11,15 @@ public class StreamApiMain {
         for (int i = 0; i < 123; i++) {
             list.add(i);
         }
-        System.out.println(minValue(new int[]{1, 1, 2, 2, 5, 3, 6, 9, 7, 4, 5, 1, 23, 6,}));
+        System.out.println(minValue(new int[]{1, 1, 2, 3, 6, 5, 4, 8, 8, 9, 8}));
         System.out.println(oddOrEven(list));
     }
 
     public static int minValue(int[] values) {
-        List<Integer> list = new ArrayList<>();
-        Arrays.stream(values).filter(x -> x < 10).map((x) -> {
-            int count = 0;
-            for (int i : values) {
-                if (i == x) {
-                    count++;
-                }
-            }
-            if (count == 1) {
-                list.add(x);
-            }
+        return Arrays.stream(values).filter(x -> x < 10).distinct().reduce((x, y) -> {
+            x = x * 10 + y;
             return x;
-        }).min();
-        return list.stream().min((x, y) -> x - y).get();
+        }).getAsInt();
     }
 
     public static List<Integer> oddOrEven(List<Integer> integers) {
