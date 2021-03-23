@@ -1,4 +1,6 @@
-package com.urise.webapp;
+package com.urise.webapp.sql;
+
+import com.urise.webapp.storage.SqlStorage;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -34,15 +36,7 @@ public class Config {
         return storageDir;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getPassword() {
-        return password;
+    public SqlStorage sqlStorage() {
+        return new SqlStorage(url, name, password);
     }
 }
