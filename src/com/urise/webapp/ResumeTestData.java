@@ -34,7 +34,7 @@ public class ResumeTestData {
 
         first.setContacts(contacts);
 
-        String personal = "Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры.";
+        /*String personal = "Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры.";
         String objective = "Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям";
 
 
@@ -123,7 +123,7 @@ public class ResumeTestData {
         pesonInf.put(SectionType.EXPERIENCE, new OrganizationSection(organization));
         pesonInf.put(SectionType.EDUCATION, cer);
 
-        first.setInfo(pesonInf);
+        first.setInfo(pesonInf);*/
 
         return first;
     }

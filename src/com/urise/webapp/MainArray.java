@@ -18,6 +18,7 @@ public class MainArray {
     private final static AbstractStorage ARRAY_STORAGE = new SortedArrayStorage();
 
     public static void main(String[] args) throws IOException {
+        Number [] numbers=new Number[]{1,2,3};
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         Resume r;

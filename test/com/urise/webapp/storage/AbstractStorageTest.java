@@ -1,9 +1,11 @@
 package com.urise.webapp.storage;
 
+import com.urise.webapp.ResumeTestData;
 import com.urise.webapp.sql.Config;
 import com.urise.webapp.exception.ExistStorageException;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.*;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,6 +14,7 @@ import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
+import java.util.EnumMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,10 +33,10 @@ public abstract class AbstractStorageTest {
     protected static final String UUID4 = UUID.randomUUID().toString();
 
     static {
-        RESUME_1 = new Resume(UUID1, "Aleksei");
-        RESUME_2 = new Resume(UUID2, "Nikolai");
-        RESUME_3 = new Resume(UUID3, "Vladimir");
-        RESUME_4 = new Resume(UUID4, "Vasili");
+        RESUME_1 = ResumeTestData.defaultResume(UUID1, "Aleksei");
+        RESUME_2 = ResumeTestData.defaultResume(UUID2, "Nikolai");
+        RESUME_3 = ResumeTestData.defaultResume(UUID3, "Vladimir");
+        RESUME_4 = ResumeTestData.defaultResume(UUID4, "Vasili");
     }
 
     public AbstractStorageTest(Storage storage) {
@@ -48,6 +51,11 @@ public abstract class AbstractStorageTest {
         storage.save(RESUME_3);
     }
 
+    @After
+    public void close() {
+        storage.clear();
+    }
+
     @Test
     public void clearTest() {
         storage.clear();
@@ -57,7 +65,8 @@ public abstract class AbstractStorageTest {
 
     @Test()
     public void updateTest() {
-        Resume update = new Resume(UUID1, RESUME_1.getFullName());
+        Resume update = new Resume(UUID1, "Full_Name");
+        update.setContacts((EnumMap<ContactType, String>) RESUME_2.getContacts());
         storage.update(update);
         assertEquals(update, storage.get(UUID1));
     }

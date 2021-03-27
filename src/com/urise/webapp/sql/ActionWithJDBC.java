@@ -1,7 +1,5 @@
-package com.urise.webapp.util;
+package com.urise.webapp.sql;
 
-import com.urise.webapp.model.Resume;
-import com.urise.webapp.sql.ConnectionFactory;
 
 import java.sql.*;
 
@@ -20,6 +18,10 @@ public class ActionWithJDBC {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 
     public PreparedStatement initPrepareStatement(String sql) {
