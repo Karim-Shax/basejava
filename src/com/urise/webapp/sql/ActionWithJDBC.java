@@ -1,46 +1,32 @@
 package com.urise.webapp.sql;
 
 
+import com.urise.webapp.exception.ExistStorageException;
+import com.urise.webapp.exception.StorageException;
+
 import java.sql.*;
 
 public class ActionWithJDBC {
     private final ConnectionFactory factory;
-    private Connection connection;
 
-    public ActionWithJDBC(String dbUrl, String dbUser, String dbPassword) {
-        factory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
-        initConnection(factory);
+    public ActionWithJDBC(ConnectionFactory connectionFactory) {
+        factory = connectionFactory;
     }
 
-    private void initConnection(ConnectionFactory factory) {
-        try {
-            this.connection = factory.getConnection();
+    public void execute(String sql) {
+        execute(sql, PreparedStatement::execute);
+    }
+
+
+    public <T> T execute(String sql, SqlExecutor<T> executor) {
+        try (Connection connection = factory.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            return executor.execute(statement);
         } catch (SQLException e) {
-            e.printStackTrace();
+            if (e.getSQLState().equals("23505")) {
+                throw new ExistStorageException(e.getMessage());
+            }
+            throw new StorageException(e.getMessage());
         }
-    }
-
-    public Connection getConnection() {
-        return connection;
-    }
-
-    public PreparedStatement initPrepareStatement(String sql) {
-        PreparedStatement statement = null;
-        try {
-            statement = connection.prepareStatement(sql);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return statement;
-    }
-
-    public Statement initStatement() {
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-        return statement;
     }
 }
