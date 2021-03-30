@@ -65,10 +65,10 @@ public abstract class AbstractStorageTest {
 
     @Test()
     public void updateTest() {
-        Resume update = new Resume(UUID1, "Full_Name");
-        update.setContacts((EnumMap<ContactType, String>) RESUME_2.getContacts());
+        Resume update = new Resume(UUID1, RESUME_4.getFullName());
+        update.setContacts((EnumMap<ContactType, String>) RESUME_4.getContacts());
         storage.update(update);
-        assertNotEquals(RESUME_1, storage.get(UUID1));
+        assertEquals(update, storage.get(UUID1));
     }
 
     @Test(expected = NotExistStorageException.class)

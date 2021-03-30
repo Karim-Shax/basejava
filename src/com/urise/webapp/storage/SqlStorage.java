@@ -44,18 +44,17 @@ public class SqlStorage implements Storage {
     @Override
     public void update(Resume r) {
         String uuid = r.getUuid();
-        withJDBC.execute("update resume set full_name=? WHERE uuid=?", ps -> {
-            ps.setString(2, uuid);
-            ps.setString(1, r.getFullName());
-            if (ps.executeUpdate() == 0) throw new NotExistStorageException(uuid);
-            for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
-                withJDBC.execute("UPDATE contact set value=?,type=? WHERE resume_uuid=?", pss -> {
-                    pss.setString(3, uuid);
-                    pss.setString(2, e.getKey().name());
-                    pss.setString(1, e.getValue());
-                    if (ps.executeUpdate() == 0) throw new NotExistStorageException(uuid);
-                    return null;
-                });
+        withJDBC.transactionalExecute(conn -> {
+            try (PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name=? WHERE uuid=?")) {
+                ps.setString(2, uuid);
+                ps.setString(1, r.getFullName());
+                if (ps.executeUpdate() == 0) throw new NotExistStorageException(uuid);
+                try (PreparedStatement pss = conn.prepareStatement("UPDATE contact set value=?,type=? WHERE resume_uuid=?")) {
+                    for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
+                        executeContact(pss, e.getValue(), e.getKey().name(), uuid);
+                    }
+                    ps.executeBatch();
+                }
             }
             return null;
         });
@@ -64,21 +63,20 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume r) {
         String uuid = r.getUuid();
-        withJDBC.execute("INSERT INTO resume (uuid, full_name) VALUES (?,?)", ps -> {
-            ps.setString(1, uuid);
-            ps.setString(2, r.getFullName());
-            ps.executeUpdate();
+        withJDBC.transactionalExecute(conn -> {
+            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
+                ps.setString(1, r.getUuid());
+                ps.setString(2, r.getFullName());
+                ps.execute();
+            }
+            try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)")) {
+                for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
+                    executeContact(ps, uuid, e.getKey().name(), e.getValue());
+                }
+                ps.executeBatch();
+            }
             return null;
         });
-        for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
-            withJDBC.execute("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)", ps -> {
-                ps.setString(1, r.getUuid());
-                ps.setString(2, e.getKey().name());
-                ps.setString(3, e.getValue());
-                ps.executeUpdate();
-                return null;
-            });
-        }
     }
 
     @Override
@@ -93,15 +91,14 @@ public class SqlStorage implements Storage {
     @Override
     public List<Resume> getAllSortedList() {
         List<Resume> resumes = new LinkedList<>();
-        withJDBC.execute("SELECT * FROM resume ORDER BY full_name,uuid", ps -> {
-            ResultSet resultSet = ps.executeQuery();
-            while (resultSet.next()) {
-                Resume resume = new Resume(resultSet.getString("uuid"),
-                        resultSet.getString("full_name"));
-                resume.setContacts((EnumMap<ContactType, String>) get(resume.getUuid()).getContacts());
-                resumes.add(resume);
+        withJDBC.transactionalExecute(conn -> {
+            try (PreparedStatement ps = conn.prepareStatement("SELECT uuid FROM resume ORDER BY full_name,uuid")) {
+                ResultSet resultSet = ps.executeQuery();
+                while (resultSet.next()) {
+                    resumes.add(get(resultSet.getString("uuid")));
+                }
             }
-            return null;
+            return conn;
         });
         return resumes;
     }
@@ -113,5 +110,12 @@ public class SqlStorage implements Storage {
             resultSet.next();
             return resultSet.getInt(1);
         });
+    }
+
+    private void executeContact(PreparedStatement ps, String uuid, String type, String value) throws SQLException {
+        ps.setString(1, uuid);
+        ps.setString(2, type);
+        ps.setString(3, value);
+        ps.addBatch();
     }
 }
