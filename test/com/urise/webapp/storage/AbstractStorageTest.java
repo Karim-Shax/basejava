@@ -33,10 +33,10 @@ public abstract class AbstractStorageTest {
     protected static final String UUID4 = UUID.randomUUID().toString();
 
     static {
-        RESUME_1 = ResumeTestData.defaultResume(UUID1, "Aleksei");
-        RESUME_2 = ResumeTestData.defaultResume(UUID2, "Nikolai");
-        RESUME_3 = ResumeTestData.defaultResume(UUID3, "Vladimir");
-        RESUME_4 = ResumeTestData.defaultResume(UUID4, "Vasili");
+        RESUME_1 = new Resume(UUID1, "Aleksei");
+        RESUME_2 = new Resume(UUID2, "Nikolai");
+        RESUME_3 = new Resume(UUID3, "Vladimir");
+        RESUME_4 = new Resume(UUID4, "Vasili");
     }
 
     public AbstractStorageTest(Storage storage) {
@@ -65,8 +65,10 @@ public abstract class AbstractStorageTest {
 
     @Test()
     public void updateTest() {
-        Resume update = new Resume(UUID1, RESUME_4.getFullName());
-        update.setContacts((EnumMap<ContactType, String>) RESUME_4.getContacts());
+        Resume update = new Resume(UUID1, "new name");
+        EnumMap<ContactType, String> contacts = new EnumMap<>(ContactType.class);
+        contacts.put(ContactType.STACKOVERFLOW, "someSO");
+        update.setContacts(contacts);
         storage.update(update);
         assertEquals(update, storage.get(UUID1));
     }
