@@ -33,7 +33,7 @@ public abstract class AbstractStorageTest {
     protected static final String UUID4 = UUID.randomUUID().toString();
 
     static {
-        RESUME_1 = new Resume(UUID1, "Aleksei");
+        RESUME_1 = ResumeTestData.defaultResume(UUID1, "Aleksei");
         RESUME_2 = new Resume(UUID2, "Nikolai");
         RESUME_3 = new Resume(UUID3, "Vladimir");
         RESUME_4 = new Resume(UUID4, "Vasili");
@@ -60,7 +60,6 @@ public abstract class AbstractStorageTest {
     public void clearTest() {
         storage.clear();
         assertEquals(0, storage.size());
-        assertEquals(0, storage.getAllSortedList().size());
     }
 
     @Test()
