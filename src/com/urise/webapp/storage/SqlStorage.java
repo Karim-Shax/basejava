@@ -35,8 +35,8 @@ public class SqlStorage implements Storage {
             Resume resume = new Resume(uuid, rs.getString("full_name").trim());
             do {
                 String value = rs.getString("value");
-                String type = rs.getString("type");
                 if (value != null) {
+                    String type = rs.getString("type");
                     resume.addContact(ContactType.valueOf(type), value);
                 }
             } while (rs.next());
@@ -51,16 +51,13 @@ public class SqlStorage implements Storage {
             try (PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name=? WHERE uuid=?")) {
                 ps.setString(2, uuid);
                 ps.setString(1, r.getFullName());
-                ps.addBatch();
-                ps.executeBatch();
                 if (ps.executeUpdate() == 0) {
                     throw new NotExistStorageException(uuid);
                 }
             }
             try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contact WHERE resume_uuid=?")) {
                 ps.setString(1, uuid);
-                ps.addBatch();
-                ps.executeBatch();
+                ps.executeUpdate();
             }
             saveContacts(r, uuid, conn);
             return null;
@@ -74,8 +71,7 @@ public class SqlStorage implements Storage {
             try (PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
-                ps.addBatch();
-                ps.executeBatch();
+                ps.executeUpdate();
             }
             saveContacts(r, uuid, conn);
             return null;
@@ -122,13 +118,13 @@ public class SqlStorage implements Storage {
 
     private EnumMap<ContactType, String> getContacts(Connection connection, String uuid) throws SQLException {
         EnumMap<ContactType, String> contact = new EnumMap<>(ContactType.class);
-        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM contact WHERE resume_uuid=?")) {
-            ps.setString(1, uuid);
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM contact")) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                String value = rs.getString("value");
-                String type = rs.getString("type");
-                if (value != null) {
+                String resume_uuid = rs.getString("resume_uuid");
+                if (resume_uuid.equals(uuid)) {
+                    String value = rs.getString("value");
+                    String type = rs.getString("type");
                     contact.put(ContactType.valueOf(type), value);
                 }
             }
