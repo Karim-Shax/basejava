@@ -59,21 +59,20 @@ public class SqlStorage implements Storage {
                 ps.setString(1, uuid);
                 ps.executeUpdate();
             }
-            saveContacts(r, uuid, conn);
+            saveContacts(r, conn);
             return null;
         });
     }
 
     @Override
     public void save(Resume r) {
-        String uuid = r.getUuid();
         withJDBC.transactionalExecute(conn -> {
             try (PreparedStatement ps = conn.prepareStatement("INSERT INTO resume (uuid, full_name) VALUES (?,?)")) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, r.getFullName());
                 ps.executeUpdate();
             }
-            saveContacts(r, uuid, conn);
+            saveContacts(r, conn);
             return null;
         });
     }
@@ -98,8 +97,13 @@ public class SqlStorage implements Storage {
                 ResultSet resultSet = ps.executeQuery();
                 while (resultSet.next()) {
                     Resume resume = new Resume(resultSet.getString("uuid"), resultSet.getString("full_name"));
-                    resume.setContacts(getContacts(conn, resultSet.getString("uuid")));
                     resumes.add(resume);
+                }
+            }
+            try (PreparedStatement ps2 = conn.prepareStatement("SELECT * FROM contact")) {
+                ResultSet resultSet2 = ps2.executeQuery();
+                for (Resume resume : resumes) {
+                    resume.setContacts(getContacts(resultSet2, resume.getUuid()));
                 }
             }
             return null;
@@ -116,26 +120,23 @@ public class SqlStorage implements Storage {
         });
     }
 
-    private EnumMap<ContactType, String> getContacts(Connection connection, String uuid) throws SQLException {
+    private EnumMap<ContactType, String> getContacts(ResultSet rs, String uuid) throws SQLException {
         EnumMap<ContactType, String> contact = new EnumMap<>(ContactType.class);
-        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM contact")) {
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                String resume_uuid = rs.getString("resume_uuid");
-                if (resume_uuid.equals(uuid)) {
-                    String value = rs.getString("value");
-                    String type = rs.getString("type");
-                    contact.put(ContactType.valueOf(type), value);
-                }
+        while (rs.next()) {
+            String resume_uuid = rs.getString("resume_uuid");
+            if (resume_uuid.equals(uuid)) {
+                String value = rs.getString("value");
+                String type = rs.getString("type");
+                contact.put(ContactType.valueOf(type), value);
             }
         }
         return contact;
     }
 
-    private void saveContacts(Resume r, String uuid, Connection conn) throws SQLException {
+    private void saveContacts(Resume r, Connection conn) throws SQLException {
         try (PreparedStatement ps = conn.prepareStatement("INSERT INTO contact (resume_uuid, type, value) VALUES (?,?,?)")) {
             for (Map.Entry<ContactType, String> e : r.getContacts().entrySet()) {
-                ps.setString(1, uuid);
+                ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
                 ps.setString(3, e.getValue());
                 ps.addBatch();
