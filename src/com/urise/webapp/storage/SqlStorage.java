@@ -91,24 +91,29 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSortedList() {
-        List<Resume> resumes = new LinkedList<>();
+        Map<String, Resume> resumes = new LinkedHashMap<>();
         withJDBC.transactionalExecute(conn -> {
             try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM resume ORDER BY full_name,uuid")) {
                 ResultSet resultSet = ps.executeQuery();
                 while (resultSet.next()) {
-                    Resume resume = new Resume(resultSet.getString("uuid"), resultSet.getString("full_name"));
-                    resumes.add(resume);
+                    String uuid = resultSet.getString("uuid");
+                    Resume resume = new Resume(uuid, resultSet.getString("full_name"));
+                    resumes.put(uuid, resume);
                 }
             }
-            try (PreparedStatement ps2 = conn.prepareStatement("SELECT * FROM contact")) {
-                ResultSet resultSet2 = ps2.executeQuery();
-                for (Resume resume : resumes) {
-                    resume.setContacts(getContacts(resultSet2, resume.getUuid()));
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact")) {
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    String resume_uuid = rs.getString("resume_uuid");
+                    Resume resume = resumes.get(resume_uuid);
+                    if (resume != null) {
+                        resume.addContact(ContactType.valueOf(rs.getString("type")), rs.getString("value"));
+                    }
                 }
             }
             return null;
         });
-        return resumes;
+        return new ArrayList<>(resumes.values());
     }
 
     @Override
@@ -118,19 +123,6 @@ public class SqlStorage implements Storage {
             resultSet.next();
             return resultSet.getInt(1);
         });
-    }
-
-    private EnumMap<ContactType, String> getContacts(ResultSet rs, String uuid) throws SQLException {
-        EnumMap<ContactType, String> contact = new EnumMap<>(ContactType.class);
-        while (rs.next()) {
-            String resume_uuid = rs.getString("resume_uuid");
-            if (resume_uuid.equals(uuid)) {
-                String value = rs.getString("value");
-                String type = rs.getString("type");
-                contact.put(ContactType.valueOf(type), value);
-            }
-        }
-        return contact;
     }
 
     private void saveContacts(Resume r, Connection conn) throws SQLException {
