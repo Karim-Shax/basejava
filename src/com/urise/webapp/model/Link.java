@@ -20,6 +20,7 @@ public class Link implements Serializable {
     }
 
     public Link() {
+
     }
 
     public String getTitle() {

@@ -17,7 +17,7 @@ public class Config {
     private String password;
 
     private Config() {
-        try (InputStream inputStream = new FileInputStream("config/resumes.properties")) {
+        try (InputStream inputStream = new FileInputStream("D:/base/basejava/config/resumes.properties")) {
             properties.load(inputStream);
             storageDir = new File(properties.getProperty("storage.dir"));
             url = properties.getProperty("db.url");

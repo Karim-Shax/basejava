@@ -14,6 +14,7 @@ public class ListSection extends Section {
     private List<String> items;
 
     public ListSection() {
+
     }
 
     public ListSection(String... items) {

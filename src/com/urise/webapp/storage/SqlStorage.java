@@ -1,8 +1,7 @@
 package com.urise.webapp.storage;
 
 import com.urise.webapp.exception.NotExistStorageException;
-import com.urise.webapp.model.ContactType;
-import com.urise.webapp.model.Resume;
+import com.urise.webapp.model.*;
 import com.urise.webapp.sql.ActionWithJDBC;
 
 import java.sql.*;
@@ -12,6 +11,11 @@ public class SqlStorage implements Storage {
     private final ActionWithJDBC withJDBC;
 
     public SqlStorage(String url, String name, String password) {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         withJDBC = new ActionWithJDBC(() -> DriverManager.getConnection(url, name, password));
     }
 
@@ -22,7 +26,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        return withJDBC.execute("    " +
+        Resume resume = withJDBC.execute("    " +
                 "SELECT * FROM resume r " +
                 " LEFT JOIN contact c " +
                 "        ON r.uuid = c.resume_uuid " +
@@ -32,16 +36,17 @@ public class SqlStorage implements Storage {
             if (!rs.next()) {
                 throw new NotExistStorageException(uuid);
             }
-            Resume resume = new Resume(uuid, rs.getString("full_name").trim());
+            Resume resume1 = new Resume(uuid, rs.getString("full_name").trim());
             do {
                 String value = rs.getString("value");
                 if (value != null) {
-                    String type = rs.getString("type");
-                    resume.addContact(ContactType.valueOf(type), value);
+                    addContact(resume1, rs.getString("type"), value);
                 }
             } while (rs.next());
-            return resume;
+            return resume1;
         });
+        resume.setInfo(getSections(resume.getUuid()));
+        return resume;
     }
 
     @Override
@@ -59,7 +64,12 @@ public class SqlStorage implements Storage {
                 ps.setString(1, uuid);
                 ps.executeUpdate();
             }
+            try (PreparedStatement ps = conn.prepareStatement("DELETE FROM section WHERE resume_uuid=?")) {
+                ps.setString(1, uuid);
+                ps.executeUpdate();
+            }
             saveContacts(r, conn);
+            saveSections(r, conn);
             return null;
         });
     }
@@ -73,6 +83,7 @@ public class SqlStorage implements Storage {
                 ps.executeUpdate();
             }
             saveContacts(r, conn);
+            saveSections(r, conn);
             return null;
         });
     }
@@ -106,14 +117,43 @@ public class SqlStorage implements Storage {
                 while (rs.next()) {
                     String resume_uuid = rs.getString("resume_uuid");
                     Resume resume = resumes.get(resume_uuid);
-                    if (resume != null) {
-                        resume.addContact(ContactType.valueOf(rs.getString("type")), rs.getString("value"));
-                    }
+                    addContact(resume, rs.getString("type"), rs.getString("value"));
+                }
+            }
+            try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section")) {
+                ResultSet rs = ps.executeQuery();
+                EnumMap<SectionType, Section> sectionEnumMap = new EnumMap<>(SectionType.class);
+                while (rs.next()) {
+                    String resume_uuid = rs.getString("resume_uuid");
+                    Resume resume = resumes.get(resume_uuid);
+                    SectionType type = SectionType.valueOf(rs.getString("type"));
+                    switchSections(rs, sectionEnumMap, type);
+                    resume.setInfo(sectionEnumMap);
                 }
             }
             return null;
         });
         return new ArrayList<>(resumes.values());
+    }
+
+    private void switchSections(ResultSet rs, EnumMap<SectionType, Section> sectionEnumMap, SectionType type) throws SQLException {
+        switch (type) {
+            case PERSONAL:
+            case OBJECTIVE:
+                sectionEnumMap.put(type,
+                        new TextSection(rs.getString("describe")));
+                break;
+            case ACHIEVEMENT:
+            case QUALIFICATIONS:
+                String str = rs.getString("describe");
+                String[] strs = str.split("\n");
+                List<String> list = new ArrayList<>();
+                for (String s : strs) {
+                    list.add(s);
+                }
+                sectionEnumMap.put(type, new ListSection(list));
+                break;
+        }
     }
 
     @Override
@@ -131,6 +171,49 @@ public class SqlStorage implements Storage {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
                 ps.setString(3, e.getValue());
+                ps.addBatch();
+            }
+            ps.executeBatch();
+        }
+    }
+
+    private void addContact(Resume resume, String type, String value) {
+        resume.addContact(ContactType.valueOf(type), value);
+    }
+
+    private EnumMap<SectionType, Section> getSections(String uuid) {
+        EnumMap<SectionType, Section> sectionEnumMap = new EnumMap<>(SectionType.class);
+        withJDBC.execute("SELECT * FROM section WHERE resume_uuid=?", ps -> {
+            ps.setString(1, uuid);
+            ResultSet resultSet = ps.executeQuery();
+            SectionType type;
+            while (resultSet.next()) {
+                type = SectionType.valueOf(resultSet.getString("type"));
+                switchSections(resultSet, sectionEnumMap, type);
+            }
+            return null;
+        });
+        return sectionEnumMap;
+    }
+
+    private void saveSections(Resume r, Connection conn) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO section (resume_uuid, type, describe) VALUES (?,?,?)")) {
+            for (Map.Entry<SectionType, Section> e : r.getInfo().entrySet()) {
+                ps.setString(1, r.getUuid());
+                ps.setString(2, e.getKey().name());
+                String describe = null;
+                switch (e.getKey()) {
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        TextSection section = (TextSection) e.getValue();
+                        describe = section.getText();
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        ListSection section1 = (ListSection) e.getValue();
+                        describe = String.join("\n", section1.getItems());
+                }
+                ps.setString(3, describe);
                 ps.addBatch();
             }
             ps.executeBatch();
