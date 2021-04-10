@@ -22,25 +22,3 @@ CREATE TABLE section
     describe    TEXT                 NOT NULL,
     url         TEXT
 )
-
-CREATE TABLE organization_section
-(
-    resume_uuid CHAR(36)             NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
-    uuid        CHAR(36) PRIMARY KEY NOT NULL
-)
-
-CREATE TABLE organization
-(
-    ors_uuid CHAR(36) NOT NULL REFERENCES organization_section (uuid) ON DELETE CASCADE,
-    link     CHAR(36) NOT NULL REFERENCES section (uuid) ON DELETE CASCADE,
-    uuid     CHAR(36) NOT NULL PRIMARY KEY
-)
-
-CREATE TABLE period
-(
-    org_uuid      CHAR(36) NOT NULL REFERENCES organization (uuid) ON DELETE CASCADE,
-    title         CHAR(50) NOT NULL,
-    start_time    DATE     NOT NULL,
-    end_time      DATE     NOT NULL,
-    tech_describe TEXT
-)

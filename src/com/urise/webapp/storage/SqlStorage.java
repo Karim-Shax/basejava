@@ -26,27 +26,29 @@ public class SqlStorage implements Storage {
 
     @Override
     public Resume get(String uuid) {
-        Resume resume = withJDBC.execute("    " +
-                "SELECT * FROM resume r " +
-                " LEFT JOIN contact c " +
-                "        ON r.uuid = c.resume_uuid " +
-                "     WHERE r.uuid =? ", ps -> {
-            ps.setString(1, uuid);
-            ResultSet rs = ps.executeQuery();
-            if (!rs.next()) {
-                throw new NotExistStorageException(uuid);
-            }
-            Resume resume1 = new Resume(uuid, rs.getString("full_name").trim());
-            do {
-                String value = rs.getString("value");
-                if (value != null) {
-                    addContact(resume1, rs.getString("type"), value);
+        return withJDBC.transactionalExecute(connection -> {
+            Resume resume;
+            try (PreparedStatement ps = connection.prepareStatement("    " +
+                    "SELECT * FROM resume r " +
+                    " LEFT JOIN contact c " +
+                    "        ON r.uuid = c.resume_uuid " +
+                    "     WHERE r.uuid =? ")) {
+                ps.setString(1, uuid);
+                ResultSet rs = ps.executeQuery();
+                if (!rs.next()) {
+                    throw new NotExistStorageException(uuid);
                 }
-            } while (rs.next());
-            return resume1;
+                resume = new Resume(uuid, rs.getString("full_name").trim());
+                do {
+                    String value = rs.getString("value");
+                    if (value != null) {
+                        addContactInResume(resume, rs.getString("type"), value);
+                    }
+                } while (rs.next());
+            }
+            resume.setInfo(getSections(connection, uuid));
+            return resume;
         });
-        resume.setInfo(getSections(resume.getUuid()));
-        return resume;
     }
 
     @Override
@@ -117,7 +119,7 @@ public class SqlStorage implements Storage {
                 while (rs.next()) {
                     String resume_uuid = rs.getString("resume_uuid");
                     Resume resume = resumes.get(resume_uuid);
-                    addContact(resume, rs.getString("type"), rs.getString("value"));
+                    addContactInResume(resume, rs.getString("type"), rs.getString("value"));
                 }
             }
             try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section")) {
@@ -141,17 +143,12 @@ public class SqlStorage implements Storage {
             case PERSONAL:
             case OBJECTIVE:
                 sectionEnumMap.put(type,
-                        new TextSection(rs.getString("describe")));
+                        new TextSection(rs.getString("value")));
                 break;
             case ACHIEVEMENT:
             case QUALIFICATIONS:
-                String str = rs.getString("describe");
-                String[] strs = str.split("\n");
-                List<String> list = new ArrayList<>();
-                for (String s : strs) {
-                    list.add(s);
-                }
-                sectionEnumMap.put(type, new ListSection(list));
+                String str = rs.getString("value");
+                sectionEnumMap.put(type, new ListSection(Arrays.asList(str.split("\n"))));
                 break;
         }
     }
@@ -177,13 +174,13 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void addContact(Resume resume, String type, String value) {
+    private void addContactInResume(Resume resume, String type, String value) {
         resume.addContact(ContactType.valueOf(type), value);
     }
 
-    private EnumMap<SectionType, Section> getSections(String uuid) {
+    private EnumMap<SectionType, Section> getSections(Connection connection, String uuid) throws SQLException {
         EnumMap<SectionType, Section> sectionEnumMap = new EnumMap<>(SectionType.class);
-        withJDBC.execute("SELECT * FROM section WHERE resume_uuid=?", ps -> {
+        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM section WHERE resume_uuid=?")) {
             ps.setString(1, uuid);
             ResultSet resultSet = ps.executeQuery();
             SectionType type;
@@ -191,29 +188,28 @@ public class SqlStorage implements Storage {
                 type = SectionType.valueOf(resultSet.getString("type"));
                 switchSections(resultSet, sectionEnumMap, type);
             }
-            return null;
-        });
+        }
         return sectionEnumMap;
     }
 
     private void saveSections(Resume r, Connection conn) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO section (resume_uuid, type, describe) VALUES (?,?,?)")) {
+        try (PreparedStatement ps = conn.prepareStatement("INSERT INTO section (resume_uuid, type, value) VALUES (?,?,?)")) {
             for (Map.Entry<SectionType, Section> e : r.getInfo().entrySet()) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
-                String describe = null;
+                String value = null;
                 switch (e.getKey()) {
                     case PERSONAL:
                     case OBJECTIVE:
-                        TextSection section = (TextSection) e.getValue();
-                        describe = section.getText();
+                        TextSection textSection = (TextSection) e.getValue();
+                        value = textSection.getText();
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        ListSection section1 = (ListSection) e.getValue();
-                        describe = String.join("\n", section1.getItems());
+                        ListSection listSection = (ListSection) e.getValue();
+                        value = String.join("\n", listSection.getItems());
                 }
-                ps.setString(3, describe);
+                ps.setString(3, value);
                 ps.addBatch();
             }
             ps.executeBatch();
