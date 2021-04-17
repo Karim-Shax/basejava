@@ -19,6 +19,11 @@ public class TextSection extends Section {
     }
 
     @Override
+    public String toHtml() {
+        return String.format("<p>%s</p>", text);
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof TextSection)) return false;

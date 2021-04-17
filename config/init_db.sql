@@ -19,6 +19,8 @@ CREATE TABLE section
 (
     uuid        CHAR(36) PRIMARY KEY NOT NULL,
     resume_uuid CHAR(36)             NOT NULL REFERENCES resume (uuid) ON DELETE CASCADE,
-    describe    TEXT                 NOT NULL,
+    value    TEXT                 NOT NULL,
     url         TEXT
 )
+CREATE UNIQUE INDEX section_idx
+  ON section (resume_uuid, type);

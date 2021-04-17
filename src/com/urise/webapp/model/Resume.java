@@ -27,6 +27,10 @@ public class Resume implements Comparable<Resume>, Serializable {
         this(UUID.randomUUID().toString(), fullName);
     }
 
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
     public Resume(String uuid, String fullName) {
         Objects.requireNonNull(uuid, "uuid must not be null");
         Objects.requireNonNull(fullName, "fullName must not be null");
@@ -50,6 +54,14 @@ public class Resume implements Comparable<Resume>, Serializable {
         this.contacts = contacts;
     }
 
+    public void addContact(ContactType valueOf, String readUTF) {
+        contacts.put(valueOf, readUTF);
+    }
+
+    public void addSection(SectionType type, Section section) {
+        info.put(type, section);
+    }
+
     public String getFullName() {
         return fullName;
     }
@@ -66,7 +78,7 @@ public class Resume implements Comparable<Resume>, Serializable {
         return contacts.get(type);
     }
 
-    public Section getProfSkill(SectionType inf) {
+    public Section getSection(SectionType inf) {
         return info.get(inf);
     }
 
@@ -105,9 +117,5 @@ public class Resume implements Comparable<Resume>, Serializable {
     @Override
     public int compareTo(Resume o) {
         return uuid.compareTo(o.uuid);
-    }
-
-    public void addContact(ContactType valueOf, String readUTF) {
-        contacts.put(valueOf, readUTF);
     }
 }

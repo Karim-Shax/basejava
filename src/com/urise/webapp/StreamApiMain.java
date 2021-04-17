@@ -4,6 +4,7 @@ package com.urise.webapp;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 public class StreamApiMain {
 
     public static void main(String[] args) {

@@ -19,8 +19,18 @@ public class Link implements Serializable {
         this.url = text;
     }
 
+
     public Link() {
 
+    }
+
+    public String toHtml() {
+        String form = "<tr>\n" +
+                "            <td colspan=\"2\">\n" +
+                "                <h3>%s</h3>\n" +
+                "            </td>\n" +
+                "        </tr>";
+        return String.format(form, title);
     }
 
     public String getTitle() {

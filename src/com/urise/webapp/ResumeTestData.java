@@ -2,6 +2,7 @@ package com.urise.webapp;
 
 import com.urise.webapp.model.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
@@ -71,7 +72,7 @@ public class ResumeTestData {
         qualif.add("Отличное знание и опыт применения концепций ООП, SOA, шаблонов проектрирования, архитектурных шаблонов, UML, функционального программирования");
         qualif.add("Родной русский, английский \"upper intermediate\"");
 
-       /* String javaOnline = "Создание, организация и проведение Java онлайн проектов и стажировок." + "\n";
+        String javaOnline = "Создание, организация и проведение Java онлайн проектов и стажировок." + "\n";
         String Wrike = "Проектирование и разработка онлайн платформы управления проектами Wrike (Java 8 API, Maven, Spring, MyBatis, Guava, Vaadin, PostgreSQL, Redis). " +
                 "Двухфакторная аутентификация, авторизация по OAuth1, OAuth2, JWT SSO." + "\n";
         String RIT = "Организация процесса разработки системы ERP для разных окружений: релизная политика, версионирование, ведение CI (Jenkins), миграция базы (кастомизация Flyway), " +
@@ -112,19 +113,15 @@ public class ResumeTestData {
         eduction.add(new Organization("SPNUIT", null, LocalDate.of(1987, 9, 1), LocalDate.of(1993, 7, 1), spnuit1, null));
         eduction.add(new Organization("MFTI", null, LocalDate.of(1984, 9, 1), LocalDate.of(1987, 6, 1), MFTI, null));
 
-        //пример добавления в место работы еще одну дату с описанием и позицией
-        OrganizationSection cer = new OrganizationSection(eduction);
-        cer.addExperience("MFTI", null, new Organization.Period(MFTI, LocalDate.of(2020, 9, 1), LocalDate.of(2020, 6, 1), null));
-*/
-        pesonInf.put(SectionType.PERSONAL, new TextSection(SectionType.PERSONAL.getTitle() + " " + personal));
-        pesonInf.put(SectionType.OBJECTIVE, new TextSection(SectionType.OBJECTIVE.getTitle() + " " + objective));
+        pesonInf.put(SectionType.PERSONAL, new TextSection(personal));
+        pesonInf.put(SectionType.OBJECTIVE, new TextSection(objective));
         pesonInf.put(SectionType.ACHIEVEMENT, new ListSection(archievement));
         pesonInf.put(SectionType.QUALIFICATIONS, new ListSection(qualif));
-//        pesonInf.put(SectionType.EXPERIENCE, new OrganizationSection(organization));
-//        pesonInf.put(SectionType.EDUCATION, cer);
+        pesonInf.put(SectionType.EXPERIENCE, new OrganizationSection(organization));
+        pesonInf.put(SectionType.EDUCATION, new OrganizationSection(eduction));
+
 
         first.setInfo(pesonInf);
-
         return first;
     }
 }

@@ -6,7 +6,9 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -16,7 +18,7 @@ public class Organization extends Section {
 
     private static final long serialVersionUID = 1L;
     private Link homePage;
-    private  List<Period> list = new ArrayList<>();
+    private List<Period> list = new ArrayList<>();
 
     public Organization() {
 
@@ -37,6 +39,15 @@ public class Organization extends Section {
 
     public Organization(Link homePage) {
         this.homePage = homePage;
+    }
+
+    public String toHtml() {
+        StringBuilder builder = new StringBuilder();
+        builder.append(homePage.toHtml());
+        for (Period p : list) {
+            builder.append(p.toHtml());
+        }
+        return builder.toString();
     }
 
     public void addPeriodPosition(Period position) {
@@ -79,15 +90,16 @@ public class Organization extends Section {
                 "homePage=\t" + homePage +
                 "list=\n" + list;
     }
+
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Period implements Serializable {
         private static final long serialVersionUID = 1L;
-        private  String title;
+        private String title;
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
-        private  LocalDate startTime;
+        private LocalDate startTime;
         @XmlJavaTypeAdapter(LocalDateAdapter.class)
-        private  LocalDate endTime;
-        private  String technoLogyNameVersion;
+        private LocalDate endTime;
+        private String technoLogyNameVersion;
 
         public Period() {
         }
@@ -100,6 +112,27 @@ public class Organization extends Section {
             this.startTime = startTime;
             this.endTime = endTime;
             technoLogyNameVersion = technologyNameVersion;
+        }
+
+        public String toHtml() {
+            StringBuilder builder = new StringBuilder();
+            String form = "<tr>\n" +
+                    "            %s\n" +
+                    "            </td>\n" +
+                    "            <td><b>%s</b><br>%s</td>\n" +
+                    "        </tr>\n";
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            String dateForm = null;
+            if (endTime == null) {
+                dateForm = startTime.format(formatter) + " - Сейчас";
+            } else {
+                dateForm = startTime.format(formatter) + " - " + endTime.format(formatter);
+            }
+            builder.append(String.format(form, "<td width=\"15%\" style=\"vertical-align\": top>" +
+                            dateForm, title,
+                    technoLogyNameVersion == null ? "" : technoLogyNameVersion));
+            return builder.toString();
         }
 
         public String getTitle() {

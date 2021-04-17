@@ -20,9 +20,25 @@ public class OrganizationSection extends Section {
         this(Arrays.asList(organizations));
     }
 
+    public void setDetail(List<Organization> detail) {
+        this.detail = detail;
+    }
+
     public OrganizationSection(List<Organization> detail) {
         Objects.requireNonNull(detail, "list most not be null");
         this.detail = detail;
+    }
+
+    @Override
+    public String toHtml() {
+        StringBuilder builder = new StringBuilder();
+        if (detail != null) {
+            for (Organization o : detail) {
+                builder.append(o.toHtml() + "\n");
+            }
+            return builder.toString();
+        }
+        return "";
     }
 
     public List<Organization> getDetail() {

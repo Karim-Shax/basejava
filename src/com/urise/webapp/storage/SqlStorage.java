@@ -3,6 +3,7 @@ package com.urise.webapp.storage;
 import com.urise.webapp.exception.NotExistStorageException;
 import com.urise.webapp.model.*;
 import com.urise.webapp.sql.ActionWithJDBC;
+import com.urise.webapp.util.JsonParser;
 
 import java.sql.*;
 import java.util.*;
@@ -28,25 +29,29 @@ public class SqlStorage implements Storage {
     public Resume get(String uuid) {
         return withJDBC.transactionalExecute(connection -> {
             Resume resume;
-            try (PreparedStatement ps = connection.prepareStatement("    " +
-                    "SELECT * FROM resume r " +
-                    " LEFT JOIN contact c " +
-                    "        ON r.uuid = c.resume_uuid " +
-                    "     WHERE r.uuid =? ")) {
+            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM resume WHERE uuid =?")) {
                 ps.setString(1, uuid);
                 ResultSet rs = ps.executeQuery();
                 if (!rs.next()) {
                     throw new NotExistStorageException(uuid);
                 }
-                resume = new Resume(uuid, rs.getString("full_name").trim());
-                do {
-                    String value = rs.getString("value");
-                    if (value != null) {
-                        addContactInResume(resume, rs.getString("type"), value);
-                    }
-                } while (rs.next());
+                resume = new Resume(uuid, rs.getString("full_name"));
             }
-            resume.setInfo(getSections(connection, uuid));
+            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM contact WHERE resume_uuid =?")) {
+                ps.setString(1, uuid);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    String value = rs.getString("value");
+                    addContactInResume(resume, rs.getString("type"), value);
+                }
+            }
+            try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM section WHERE resume_uuid =?")) {
+                ps.setString(1, uuid);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    addSection(rs, resume);
+                }
+            }
             return resume;
         });
     }
@@ -90,7 +95,6 @@ public class SqlStorage implements Storage {
         });
     }
 
-
     @Override
     public void delete(String uuid) {
         withJDBC.execute("DELETE FROM resume WHERE uuid=?", ps -> {
@@ -128,29 +132,12 @@ public class SqlStorage implements Storage {
                 while (rs.next()) {
                     String resume_uuid = rs.getString("resume_uuid");
                     Resume resume = resumes.get(resume_uuid);
-                    SectionType type = SectionType.valueOf(rs.getString("type"));
-                    switchSections(rs, sectionEnumMap, type);
-                    resume.setInfo(sectionEnumMap);
+                    addSection(rs, resume);
                 }
             }
             return null;
         });
         return new ArrayList<>(resumes.values());
-    }
-
-    private void switchSections(ResultSet rs, EnumMap<SectionType, Section> sectionEnumMap, SectionType type) throws SQLException {
-        switch (type) {
-            case PERSONAL:
-            case OBJECTIVE:
-                sectionEnumMap.put(type,
-                        new TextSection(rs.getString("value")));
-                break;
-            case ACHIEVEMENT:
-            case QUALIFICATIONS:
-                String str = rs.getString("value");
-                sectionEnumMap.put(type, new ListSection(Arrays.asList(str.split("\n"))));
-                break;
-        }
     }
 
     @Override
@@ -175,21 +162,9 @@ public class SqlStorage implements Storage {
     }
 
     private void addContactInResume(Resume resume, String type, String value) {
-        resume.addContact(ContactType.valueOf(type), value);
-    }
-
-    private EnumMap<SectionType, Section> getSections(Connection connection, String uuid) throws SQLException {
-        EnumMap<SectionType, Section> sectionEnumMap = new EnumMap<>(SectionType.class);
-        try (PreparedStatement ps = connection.prepareStatement("SELECT * FROM section WHERE resume_uuid=?")) {
-            ps.setString(1, uuid);
-            ResultSet resultSet = ps.executeQuery();
-            SectionType type;
-            while (resultSet.next()) {
-                type = SectionType.valueOf(resultSet.getString("type"));
-                switchSections(resultSet, sectionEnumMap, type);
-            }
+        if (value != null) {
+            resume.addContact(ContactType.valueOf(type), value);
         }
-        return sectionEnumMap;
     }
 
     private void saveSections(Resume r, Connection conn) throws SQLException {
@@ -197,22 +172,19 @@ public class SqlStorage implements Storage {
             for (Map.Entry<SectionType, Section> e : r.getInfo().entrySet()) {
                 ps.setString(1, r.getUuid());
                 ps.setString(2, e.getKey().name());
-                String value = null;
-                switch (e.getKey()) {
-                    case PERSONAL:
-                    case OBJECTIVE:
-                        TextSection textSection = (TextSection) e.getValue();
-                        value = textSection.getText();
-                        break;
-                    case ACHIEVEMENT:
-                    case QUALIFICATIONS:
-                        ListSection listSection = (ListSection) e.getValue();
-                        value = String.join("\n", listSection.getItems());
-                }
-                ps.setString(3, value);
+                Section section = e.getValue();
+                ps.setString(3, JsonParser.write(section, Section.class));
                 ps.addBatch();
             }
             ps.executeBatch();
+        }
+    }
+
+    private void addSection(ResultSet rs, Resume r) throws SQLException {
+        String content = rs.getString("value");
+        if (content != null) {
+            SectionType type = SectionType.valueOf(rs.getString("type"));
+            r.addSection(type, JsonParser.read(content, Section.class));
         }
     }
 }

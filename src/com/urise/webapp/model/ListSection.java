@@ -26,6 +26,22 @@ public class ListSection extends Section {
         this.items = items;
     }
 
+    @Override
+    public String toHtml() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("<tr>\n" +
+                "            <td colspan=\"2\">\n" +
+                "                <ul>\n");
+        String form = "<li>%s</li>\n";
+        for (String s : items) {
+            builder.append(String.format(form, s));
+        }
+        builder.append(" </ul>\n" +
+                "            </td>\n" +
+                "        </tr>");
+        return builder.toString();
+    }
+
     public List<String> getItems() {
         return items;
     }
