@@ -28,14 +28,14 @@
 
         <dl>
             <dd>
-                <button type="submit" name="save" value="edit" onclick="document.form.submit();">Save</button>
-                <button type="button" onclick="window.history.back()">Cancel</button>
+                <button type="submit" name="save" value="edit" onclick="document.form.submit();">Сохранить</button>
+                <button type="button" onclick="window.history.back()">Отмена</button>
             </dd>
         </dl>
 
         <input type="hidden" name="uuid" value="${resume.uuid}">
         <dl class="inline">
-            <dt>Name:</dt>
+            <dt>Имя</dt>
             <dd><input type="text" name="fullName" size=50 value="${resume.fullName}" style="font-size: large"></dd>
         </dl>
 
