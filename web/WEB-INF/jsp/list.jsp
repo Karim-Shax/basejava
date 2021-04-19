@@ -24,11 +24,11 @@
 <section class="d-flex flex-column h-100">
     <table>
         <tr>
-            <th>Name</th>
+            <th>Имя</th>
             <th>Email</th>
-            <th>Phone</th>
-            <th>Remove</th>
-            <th>Update</th>
+            <th>Телефон</th>
+            <th>Удалить</th>
+            <th>Редактировать</th>
         </tr>
         <c:forEach items="${resumes}" var="resume">
             <jsp:useBean id="resume" type="com.urise.webapp.model.Resume"/>

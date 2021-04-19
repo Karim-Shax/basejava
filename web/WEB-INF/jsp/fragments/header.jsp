@@ -1,3 +1,4 @@
+
 <%--
   Created by IntelliJ IDEA.
   User: KARIM-Shakh
@@ -8,9 +9,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <header>
     <ul align="center">
-        <a href="resume"><input type="submit"  name="menu" value="Resume Management" ></a>
-        <a href="resume?action=add&&uuid=new"><input type="submit" name="add" value="Add New Resume"></a>
-        <a href="resume?action=clear"><input  type="submit" name="clear" value="Clear" size="5"> </a>
+        <a href="resume"><input type="submit"  name="menu" value="Главная" ></a>
+        <a href="resume?uuid=new&action=edit"><input type="submit" name="add" value="Добавить Резюме"></a>
+        <a href="resume?action=clear"><input  type="submit" name="clear" value="Очистить" size="5"> </a>
     </ul>
     <script src="https://code.jquery.com/jquery-3.1.1.js">
     </script>

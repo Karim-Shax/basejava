@@ -26,24 +26,20 @@ public class ResumeServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        String action = request.getParameter("save");
         String fullName = request.getParameter("fullName");
+        String uuid = request.getParameter("uuid");
         Resume r = null;
         if (fullName == null || fullName.equals("")) {
             response.sendRedirect("resume");
             return;
         }
-        if (action.equals("add")) {
-            r = new Resume(UUID.randomUUID().toString(), fullName);
-            updateResume(request, r);
-            storage.save(r);
-        } else {
-            String uuid = request.getParameter("uuid");
+        System.out.println(uuid);
+        if (!uuid.equals("new") && !uuid.equals("")) {
             storage.delete(uuid);
-            r = new Resume(UUID.randomUUID().toString(), fullName);
-            updateResume(request, r);
-            storage.save(r);
         }
+        r = new Resume(UUID.randomUUID().toString(), fullName);
+        updateResume(request, r);
+        storage.save(r);
         response.sendRedirect("resume");
     }
 
@@ -58,6 +54,8 @@ public class ResumeServlet extends HttpServlet {
         }
         r.addSection(SectionType.PERSONAL, new TextSection(request.getParameter("PERSONAL")));
         r.addSection(SectionType.OBJECTIVE, new TextSection(request.getParameter("OBJECTIVE")));
+        System.out.println(r.getSection(SectionType.PERSONAL));
+        System.out.println(r.getSection(SectionType.OBJECTIVE));
         addListAndTextSection(request, SectionType.ACHIEVEMENT, r);
         addListAndTextSection(request, SectionType.QUALIFICATIONS, r);
         addOrUpdateResume(r, request, SectionType.EDUCATION);
@@ -91,12 +89,12 @@ public class ResumeServlet extends HttpServlet {
                 request.setAttribute("resume", r);
                 break;
             case "edit":
-                r = storage.get(uuid);
+                if (uuid.equals("new")) {
+                    r = new Resume();
+                } else {
+                    r = storage.get(uuid);
+                }
                 url = "/WEB-INF/jsp/edit.jsp";
-                request.setAttribute("resume", r);
-                break;
-            case "add":
-                url = "/WEB-INF/jsp/add.jsp";
                 request.setAttribute("resume", r);
                 break;
             default:
@@ -122,12 +120,12 @@ public class ResumeServlet extends HttpServlet {
                     continue;
                 }
                 url = exParam[i + 1];
-                if (exParam[i + 2] != null && exParam[i + 2].trim().length() != 0) {
+                if (exParam[i + 2] != null && !exParam[i + 2].equals("")) {
                     startTime = LocalDate.parse(exParam[i + 2]);
                 }
-                if (exParam[i + 3] == null && exParam[i + 3].trim().length() != 0) {
+                if (exParam[i + 3] == null || Objects.equals(exParam[i + 3], "")) {
                     endTime = LocalDate.now();
-                } else if (exParam[i+3]!=null&&!exParam[i+3].trim().equals("")) {
+                } else if (exParam[i + 3] != null && !exParam[i + 3].equals("")) {
                     endTime = LocalDate.parse(exParam[i + 3]);
                 }
                 title = exParam[i + 4];

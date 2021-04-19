@@ -41,15 +41,6 @@ public class Organization extends Section {
         this.homePage = homePage;
     }
 
-    public String toHtml() {
-        StringBuilder builder = new StringBuilder();
-        builder.append(homePage.toHtml());
-        for (Period p : list) {
-            builder.append(p.toHtml());
-        }
-        return builder.toString();
-    }
-
     public void addPeriodPosition(Period position) {
         list.add(position);
     }
@@ -114,27 +105,6 @@ public class Organization extends Section {
             technoLogyNameVersion = technologyNameVersion;
         }
 
-        public String toHtml() {
-            StringBuilder builder = new StringBuilder();
-            String form = "<tr>\n" +
-                    "            %s\n" +
-                    "            </td>\n" +
-                    "            <td><b>%s</b><br>%s</td>\n" +
-                    "        </tr>\n";
-
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            String dateForm = null;
-            if (endTime == null) {
-                dateForm = startTime.format(formatter) + " - Сейчас";
-            } else {
-                dateForm = startTime.format(formatter) + " - " + endTime.format(formatter);
-            }
-            builder.append(String.format(form, "<td width=\"15%\" style=\"vertical-align\": top>" +
-                            dateForm, title,
-                    technoLogyNameVersion == null ? "" : technoLogyNameVersion));
-            return builder.toString();
-        }
-
         public String getTitle() {
             return title;
         }
@@ -149,6 +119,13 @@ public class Organization extends Section {
 
         public String getTechnoLogyNameVersion() {
             return technoLogyNameVersion;
+        }
+
+        public String viewDate() {
+            StringBuilder builder = new StringBuilder();
+            builder.append(startTime.getMonthValue() + "/" + startTime.getYear());
+            builder.append("-" + endTime.getMonthValue() + "/" + endTime.getYear());
+            return builder.toString();
         }
 
         @Override

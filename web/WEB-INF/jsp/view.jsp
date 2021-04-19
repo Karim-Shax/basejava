@@ -5,7 +5,7 @@
   Time: 22:31
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
 <head>
@@ -21,28 +21,76 @@
 <body>
 <jsp:include page="fragments/header.jsp"/>
 <section>
-    <fieldset>
-        <h2>${resume.fullName}&nbsp;<a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></h2>
-        <p>
-            <c:forEach var="contactEntry" items="${resume.contacts}">
-                <jsp:useBean id="contactEntry"
-                             type="java.util.Map.Entry<com.urise.webapp.model.ContactType, java.lang.String>"/>
-                <%=contactEntry.getKey().toHtml(contactEntry.getValue())%><br/>
-            </c:forEach>
-        </p>
-
-        <c:forEach var="sectionEntry" items="${resume.info}">
-            <jsp:useBean id="sectionEntry"
-                         type="java.util.Map.Entry<com.urise.webapp.model.SectionType, com.urise.webapp.model.Section>"/>
-            <tr style="margin: auto">
-                <td colspan="2"><h2><a name="type.name"><%=sectionEntry.getKey().name()%>
-                </a></h2></td>
-                <td>
-                    <%=sectionEntry.getValue().toHtml()%>
-                </td>
-            </tr>
+    <h2>${resume.fullName}&nbsp;<a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></h2>
+    <p>
+        <c:forEach var="contactEntry" items="${resume.contacts}">
+            <jsp:useBean id="contactEntry"
+                         type="java.util.Map.Entry<com.urise.webapp.model.ContactType, java.lang.String>"/>
+            <c:if test="${(contactEntry.key.name()=='PHONE')||(contactEntry.key.name()=='EMAIL')||(contactEntry.key.name()=='SKYPE')}">
+                <%=contactEntry.getKey().name()%> <a href="${contactEntry.getValue()}"><%=contactEntry.getValue()%></a>
+            </c:if>
+            <c:if test="${(contactEntry.key.name()=='LINKEDIN')||(contactEntry.key.name()=='STACKOVERFLOW')||(contactEntry.key.name()=='GITHUB')}">
+                <a href=<%=contactEntry.getValue()%>><%=contactEntry.getKey().name()%></a>
+            </c:if>
+            <br/>
         </c:forEach>
-    </fieldset>
+    </p>
+    <table cellpadding="2">
+
+        <c:forEach var="Entry" items="${resume.info}">
+
+            <jsp:useBean id="Entry"
+                         type="java.util.Map.Entry<com.urise.webapp.model.ContactType,com.urise.webapp.model.Section>"/>
+            <tr>
+                <td colspan="2"><h3><a name="type.name"><c:out value="${Entry.key.title}"/></a></h3></td>
+            </tr>
+            <c:if test="${(Entry.key.name()=='PERSONAL')||(Entry.key.name()=='OBJECTIVE')}">
+                <tr>
+                    <td colspan="2">
+                        <em> <c:out value="${Entry.value.getText()}"/></em>
+                    </td>
+                </tr>
+            </c:if>
+            <c:if test="${(Entry.key.name()=='ACHIEVEMENT')||(Entry.key.name()=='QUALIFICATIONS')}">
+                <tr>
+                    <td colspan="2">
+                        <ul>
+                            <c:forEach var="item" items="${Entry.value.getItems()}">
+                                <li><em><c:out value="${item}"/></em></li>
+                            </c:forEach>
+                        </ul>
+                    </td>
+                </tr>
+            </c:if>
+            <c:if test="${(Entry.key.name()=='EXPERIENCE')||(Entry.key.name()=='EDUCATION')}">
+                <c:forEach var="organization" items="${Entry.value.getDetail()}">
+                    <tr>
+                        <td colspan="2">
+                            <h5>
+                                <a href="${organization.getHomePage().getUrl()}"><c:out value="${organization.getHomePage().getTitle()}"/></a>
+                            </h5>
+                        </td>
+                    </tr>
+                    <c:forEach var="period" items="${organization.getList()}">
+                        <jsp:useBean id="period" type="com.urise.webapp.model.Organization.Period"/>
+                        <tr>
+                            <td width="15%" style="vertical-align: top">
+                                <%=period.viewDate()%>
+                            </td>
+                            <td>
+                                <em>
+                                    <c:out value="${period.title}"/>
+                                    <c:out value="${period.getTechnoLogyNameVersion()}" />
+
+                                </em>
+                                <br>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                </c:forEach>
+            </c:if>
+        </c:forEach>
+    </table>
 </section>
 <jsp:include page="fragments/footer.jsp"/>
 </body>

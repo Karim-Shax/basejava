@@ -29,18 +29,6 @@ public class OrganizationSection extends Section {
         this.detail = detail;
     }
 
-    @Override
-    public String toHtml() {
-        StringBuilder builder = new StringBuilder();
-        if (detail != null) {
-            for (Organization o : detail) {
-                builder.append(o.toHtml() + "\n");
-            }
-            return builder.toString();
-        }
-        return "";
-    }
-
     public List<Organization> getDetail() {
         return detail;
     }
