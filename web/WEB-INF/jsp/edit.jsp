@@ -53,10 +53,13 @@
             <dl id="form">
                 <dt>${type.getTitle()}:</dt>
                 <c:if test="${(type.name()=='PERSONAL')||(type.name()=='OBJECTIVE')}">
-                    <dd>
-                        <input size="120" name="${type.name()}"
-                               value="${resume.getSection(type).getText()}">
-                        <br/>
+                    <button type="button" onclick="makeSectionFormAch('${type.name()}')" >Добавить</button>
+                    <dd id="${type.name()}">
+                        <c:if test="${resume.getSection(type).getText()!=null}">
+                            <input size="100" name="${type.name()}"
+                                   value="${resume.getSection(type).getText()}">
+                            <br/>
+                        </c:if>
                     </dd>
                 </c:if>
                 <c:if test="${(type.name()=='ACHIEVEMENT')||(type.name()=='QUALIFICATIONS')}">
@@ -86,6 +89,7 @@
                     </c:if>
                     <c:forEach var="organization" items="${resume.getSection(type).getDetail()}" varStatus="orgcount">
                         <div>
+                            <c:if test="${organization.homePage.getTitle()!=null}">
                             <dd>
                                 Кампания <input type="text" name="${type.name()}"
                                                 value="${organization.homePage.getTitle()}"
@@ -95,6 +99,7 @@
                                                  size=60"><br/>
                                 <br/>
                             </dd>
+                            </c:if>
                             <c:forEach var="period" items="${organization.getList()}">
                                 <dd>
                                     Начало
@@ -117,11 +122,12 @@
                                            size=60><br/> <br/><br/> <br/>
                                 </dd>
                             </c:forEach>
-
+                            <c:if test="${organization.homePage.getTitle()!=null}">
                             <button type="button" id="${type.name()=='EXPERIENCE'?'expos':'edpos'}+${organization.homePage.getTitle()}" onclick="addPos(this.id)">
                                 Добавить Позицию
                             </button>
                             <input type="hidden" class="form-control" name="${type}" value="end">
+                            </c:if>
                             <hr/>
                         </div>
                     </c:forEach>

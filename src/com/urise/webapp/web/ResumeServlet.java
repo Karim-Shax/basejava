@@ -3,6 +3,7 @@ package com.urise.webapp.web;
 import com.urise.webapp.model.*;
 import com.urise.webapp.sql.Config;
 import com.urise.webapp.storage.Storage;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -53,8 +54,8 @@ public class ResumeServlet extends HttpServlet {
                 r.getContacts().remove(type);
             }
         }
-        r.addSection(SectionType.PERSONAL, new TextSection(request.getParameter("PERSONAL")));
-        r.addSection(SectionType.OBJECTIVE, new TextSection(request.getParameter("OBJECTIVE")));
+        addListAndTextSection(request,SectionType.PERSONAL,r);
+        addListAndTextSection(request,SectionType.OBJECTIVE,r);
         addListAndTextSection(request, SectionType.ACHIEVEMENT, r);
         addListAndTextSection(request, SectionType.QUALIFICATIONS, r);
         addOrUpdateResume(r, request, SectionType.EDUCATION);
@@ -115,33 +116,33 @@ public class ResumeServlet extends HttpServlet {
         Organization organization = null;
         if (exParam != null) {
             for (int i = 0; i < exParam.length; ) {
-                name=exParam[i];
-                if (i==exParam.length-1){
+                name = exParam[i];
+                if (i == exParam.length - 1||name==null||name.equals("")) {
                     break;
                 }
                 if (organization != null && !exParam[i].equals("end")) {
                     if (exParam[i] != null && !exParam[i].equals("")) {
                         startTime = LocalDate.parse(exParam[i]);
                     }
-                    if (exParam[i + 1] == null || Objects.equals(exParam[i + 1], " ")) {
+                    if (exParam[i + 1] == null || Objects.equals(exParam[i + 1], "")) {
                         endTime = LocalDate.now();
-                    } else if (exParam[i + 1] != null && !exParam[i + 1].equals(" ")) {
+                    } else if (exParam[i + 1] != null && !exParam[i + 1].equals("")) {
                         endTime = LocalDate.parse(exParam[i + 1]);
                     }
                     title = exParam[i + 2];
                     description = exParam[i + 3];
                     if (startTime != null && title != null && !title.isEmpty()) {
                         organization.addPeriodPosition(new Organization.Period(title, startTime, endTime, description));
-                        i+=4;
+                        i += 4;
                     }
                     if (exParam[i].equals("end")) {
                         organizations.add(organization);
                         organization = null;
                     }
                     continue;
-                }else if (name.equals("end")){
-                    name=exParam[i+1];
-                    i+=1;
+                } else if (name.equals("end")) {
+                    name = exParam[i + 1];
+                    i += 1;
                 }
                 url = exParam[i + 1];
                 if (exParam[i + 2] != null && !exParam[i + 2].equals("")) {
@@ -181,7 +182,15 @@ public class ResumeServlet extends HttpServlet {
                 }
             }
             if (!list.isEmpty()) {
-                r.addSection(type, new ListSection(list));
+                if (type != SectionType.PERSONAL && type != SectionType.OBJECTIVE) {
+                    r.addSection(type, new ListSection(list));
+                } else {
+                    StringBuilder builder = new StringBuilder();
+                    list.stream().forEach((x) -> {
+                        builder.append(x + ",");
+                    });
+                    r.addSection(type, new TextSection(builder.toString()));
+                }
             }
         }
     }
