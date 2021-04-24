@@ -28,8 +28,8 @@
 
         <dl>
             <dd>
-                <button type="submit" name="save" value="edit" onclick="document.form.submit();">Сохранить</button>
-                <button type="button" onclick="window.history.back()">Отмена</button>
+                <button type="submit" name="save" value="edit" onclick="document.form.submit()" >Сохранить</button>
+                <button type="button" onclick="window.history.back()" >Отмена</button>
             </dd>
         </dl>
 
@@ -52,108 +52,47 @@
             <c:forEach var="type" items="${SectionType.values()}">
             <dl id="form">
                 <dt>${type.getTitle()}:</dt>
-                <c:if test="${type.name()=='PERSONAL'}">
+                <c:if test="${(type.name()=='PERSONAL')||(type.name()=='OBJECTIVE')}">
                     <dd>
-                                <input size="120" name="${type.name()}"
-                                          value="${resume.getSection(type).getText()}">
+                        <input size="120" name="${type.name()}"
+                               value="${resume.getSection(type).getText()}">
                         <br/>
                     </dd>
                 </c:if>
-                <c:if test="${type.name()=='OBJECTIVE'}">
-                    <dd>
-                                <input size="120" name="${type.name()}"
-                                          value="${resume.getSection(type).getText()}">
-                        <br/>
-                    </dd>
-                </c:if>
-                <c:if test="${type.name()=='ACHIEVEMENT'}">
-                    <button type="button" onclick="makeSectionFormAch()">Добавить</button>
-
-                    <dd id="ACHIEVEMENT">
-                        <c:forEach var="item" items="${resume.getSection(type).getItems()}">
-                            <input size="120" name="${type.name()}" value="${item}">
-                            <br/>
-                        </c:forEach>
-                    </dd>
-                    <script>
-                        function makeSectionFormAch() {
-                            input = document.createElement('input');
-                            input.size = 100;
-                            input.type = 'text'
-                            input.name = 'ACHIEVEMENT';
-                            document.getElementById('ACHIEVEMENT').appendChild(input);
-                        }
-                    </script>
-                </c:if>
-                <c:if test="${type.name()=='QUALIFICATIONS'}">
-                    <button type="button" onclick="makeSectionFormQual()">Добавить</button>
-                    <dd id="QUALIFICATIONS">
-                        <c:forEach var="item" items="${resume.getSection(type).getItems()}">
-                            <input size="120" name="${type.name()}" value="${item}">
-                            <br/>
-                        </c:forEach>
-                    </dd>
-                    <script>
-                        function makeSectionFormQual() {
-                            input = document.createElement('input');
-                            input.size = 100;
-                            input.type = 'text'
-                            input.name = 'QUALIFICATIONS';
-                            document.getElementById('QUALIFICATIONS').appendChild(input);
-                        }
-                    </script>
-                </c:if>
-                <c:if test="${type.name()=='EXPERIENCE'}">
-                    <button type="button" id="sect" name="${type.name()}">
-                        Добавить
-                    </button>
-                    <script>
-                        $(function () {
-                            $('#sect').click(function () {
-                                var content = $('#EXPERIENCE').html();
-                                if (content == null) {
-                                    content = $('#sectionIn').html();
-                                }
-                                var newdiv = $("<div>");
-                                newdiv.html(content);
-                                $('#sect').after(newdiv);
-                            });
-                        });
-                    </script>
-                    <c:if test="${(resume.getSection(type).getDetail()==null)||(resume.getSection(type).getDetail().isEmpty())}">
-                        <div id="sectionIn">
-                            <dd>
-                                Кампания <input type="text" name="${type.name()}"
-                                               size=60"><br/> <br/>
-                                Url Адрес <input type="text" name="${type.name()}" size=60"><br/> <br/>
-                            </dd>
-                            <dd>
-                                Начало
-                                <input type="date" name="${type.name()}"
-                                       size=60><br/> <br/>
-                                Конец
-                                <input type="date"
-                                       name="${type.name()}" size=60><br/> <br/>
-                                Позиция
-                                <input type="text"
-                                       name="${type.name()}"
-                                       size=60><br/> <br/>
-                                Описание
-                                <input type="text"
-                                       name="${type.name()}"
-                                       size=60><br/> <br/><br/> <br/>
-                            </dd>
-                            <br/>
-                        </div>
+                <c:if test="${(type.name()=='ACHIEVEMENT')||(type.name()=='QUALIFICATIONS')}">
+                    <c:if test="${type.name()=='ACHIEVEMENT'}">
+                        <button type="button" onclick="makeSectionFormAch('ACHIEVEMENT')" >Добавить</button>
                     </c:if>
-                    <c:forEach var="organization" items="${resume.getSection(type).getDetail()}">
-                        <div id="EXPERIENCE">
+                    <c:if test="${type.name()=='QUALIFICATIONS'}">
+                        <button type="button" onclick="makeSectionFormAch('QUALIFICATIONS')" >Добавить</button>
+                    </c:if>
+                    <dd id="${type.name()}">
+                        <c:forEach var="item" items="${resume.getSection(type).getItems()}">
+                            <input size="120" name="${type.name()}" value="${item}">
+                            <br/>
+                        </c:forEach>
+                    </dd>
+                </c:if>
+                <c:if test="${(type.name()=='EXPERIENCE')||(type.name()=='EDUCATION')}">
+                    <c:if test="${type.name()=='EXPERIENCE'}">
+                        <button type="button" id="sect" name="${type.name()}" >
+                            Добавить Организацию
+                        </button>
+                    </c:if>
+                    <c:if test="${type.name()=='EDUCATION'}">
+                        <button type="button" id="sect1" name="${type.name()}" >
+                            Добавить Организацию
+                        </button>
+                    </c:if>
+                    <c:forEach var="organization" items="${resume.getSection(type).getDetail()}" varStatus="orgcount">
+                        <div>
                             <dd>
                                 Кампания <input type="text" name="${type.name()}"
-                                               value="${organization.homePage.getTitle()}"
-                                               size=60"><br/> <br/>
-                                Url Адрес <input type="text" name="${type.name()}" value="${organization.homePage.getUrl()}"
-                                           size=60"><br/>
+                                                value="${organization.homePage.getTitle()}"
+                                                size=60"><br/> <br/>
+                                Url Адрес <input type="text" name="${type.name()}"
+                                                 value="${organization.homePage.getUrl()}"
+                                                 size=60"><br/>
                                 <br/>
                             </dd>
                             <c:forEach var="period" items="${organization.getList()}">
@@ -178,86 +117,14 @@
                                            size=60><br/> <br/><br/> <br/>
                                 </dd>
                             </c:forEach>
-                        </div>
-                    </c:forEach>
-                </c:if>
-                <c:if test="${type.name()=='EDUCATION'}">
-                    <button type="button" id="sect2" name="${type.name()}"> Добавить
-                    </button>
-                    <script>
-                        $(function () {
-                            $('#sect2').click(function () {
-                                var content = $('#EDUCATION').html();
-                                if (content == null) {
-                                    content = $('#sectionInE').html();
-                                }
-                                var newdiv = $("<div>");
-                                newdiv.html(content);
-                                $('#sect2').after(newdiv);
-                            });
-                        });
-                    </script>
-                    <c:if test="${(resume.getSection(type).getDetail()==null)||(resume.getSection(type).getDetail().isEmpty())}">
-                        <div id="sectionInE">
-                            <dd>
-                                Кампания <input type="text" name="${type.name()}"
-                                               size=60"><br/> <br/>
-                                Url Адрес <input type="text" name="${type.name()}" size=60"><br/>
-                                <br/>
-                            </dd>
-                            <dd>
-                                Начало
-                                <input type="date" placeholder="dd-MM-yyyy" name="${type.name()}"
-                                       size=60><br/> <br/>
-                                Конец
-                                <input type="date" placeholder="dd-MM-yyyy"
-                                       name="${type.name()}" size=60><br/> <br/>
-                                Позиция
-                                <input type="text"
-                                       name="${type.name()}"
-                                       size=60><br/> <br/>
-                                Описание
-                                <input type="text"
-                                       name="${type.name()}"
-                                       size=60><br/> <br/><br/> <br/>
-                            </dd>
-                        </div>
-                    </c:if>
-                    <c:forEach var="organization" items="${resume.getSection(type).getDetail()}">
-                        <div id="EDUCATION">
-                            <dd>
-                                Кампания <input type="text" name="${type.name()}"
-                                               value="${organization.homePage.getTitle()}"
-                                               size=60"><br/> <br/>
-                                Url Адрес <input type="text" name="${type.name()}" value="${organization.homePage.getUrl()}"
-                                           size=60"><br/>
-                                <br/>
-                            </dd>
-                            <c:forEach var="period" items="${organization.getList()}">
-                                <dd>
-                                    Начало
-                                    <input type="date" placeholder="dd-MM-yyyy" name="${type.name()}"
-                                           value="${period.getStartTime()}"
-                                           size=60><br/> <br/>
-                                    Конец
-                                    <input type="date" placeholder="dd-MM-yyyy"
-                                           value="${period.getEndTime()}"
-                                           name="${type.name()}" size=60><br/> <br/>
-                                    Позиция
-                                    <input type="text"
-                                           name="${type.name()}"
-                                           value="${period.getTitle()}"
-                                           size=60><br/> <br/>
-                                    Описание
-                                    <input type="text"
-                                           name="${type.name()}"
-                                           value="${period.getTechnoLogyNameVersion()}"
-                                           size=60><br/> <br/><br/> <br/>
-                                </dd>
-                            </c:forEach>
-                        </div>
-                    </c:forEach>
 
+                            <button type="button" id="${type.name()=='EXPERIENCE'?'expos':'edpos'}+${organization.homePage.getTitle()}" onclick="addPos(this.id)">
+                                Добавить Позицию
+                            </button>
+                            <input type="hidden" class="form-control" name="${type}" value="end">
+                            <hr/>
+                        </div>
+                    </c:forEach>
                 </c:if>
             </dl>
             </c:forEach>

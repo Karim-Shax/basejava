@@ -18,6 +18,10 @@ footer {
     text-align: center;
 }
 
+tr.bottom{
+    vertical-align: bottom;
+}
+
 dl {
     margin: 8px 0;
     padding: 0;

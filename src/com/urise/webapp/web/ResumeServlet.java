@@ -3,7 +3,6 @@ package com.urise.webapp.web;
 import com.urise.webapp.model.*;
 import com.urise.webapp.sql.Config;
 import com.urise.webapp.storage.Storage;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,13 +32,17 @@ public class ResumeServlet extends HttpServlet {
             response.sendRedirect("resume");
             return;
         }
+
         System.out.println(uuid);
         if (!uuid.equals("new") && !uuid.equals("")) {
-            storage.delete(uuid);
+            r = new Resume(uuid, fullName);
+            updateResume(request, r);
+            storage.update(r);
+        } else if (uuid.equals("new")) {
+            r = new Resume(UUID.randomUUID().toString(), fullName);
+            updateResume(request, r);
+            storage.save(r);
         }
-        r = new Resume(UUID.randomUUID().toString(), fullName);
-        updateResume(request, r);
-        storage.save(r);
         response.sendRedirect("resume");
     }
 
@@ -91,6 +94,7 @@ public class ResumeServlet extends HttpServlet {
             case "edit":
                 if (uuid.equals("new")) {
                     r = new Resume();
+                    r.setUuid("new");
                 } else {
                     r = storage.get(uuid);
                 }
@@ -112,12 +116,36 @@ public class ResumeServlet extends HttpServlet {
         String description = null;
         String[] exParam = request.getParameterValues(type.name());
         List<Organization> organizations = new ArrayList<>();
-        System.out.println(Arrays.toString(exParam));
-        if (exParam != null)
-            for (int i = 0; i < exParam.length; i += 6) {
-                name = exParam[i];
-                if (name.isEmpty()) {
+        Organization organization = null;
+        if (exParam != null) {
+            for (int i = 0; i < exParam.length; ) {
+                name=exParam[i];
+                if (i==exParam.length-1){
+                    break;
+                }
+                if (organization != null && !exParam[i].equals("end")) {
+                    if (exParam[i] != null && !exParam[i].equals("")) {
+                        startTime = LocalDate.parse(exParam[i]);
+                    }
+                    if (exParam[i + 1] == null || Objects.equals(exParam[i + 1], " ")) {
+                        endTime = LocalDate.now();
+                    } else if (exParam[i + 1] != null && !exParam[i + 1].equals(" ")) {
+                        endTime = LocalDate.parse(exParam[i + 1]);
+                    }
+                    title = exParam[i + 2];
+                    description = exParam[i + 3];
+                    if (startTime != null && title != null && !title.isEmpty()) {
+                        organization.addPeriodPosition(new Organization.Period(title, startTime, endTime, description));
+                        i+=4;
+                    }
+                    if (exParam[i].equals("end")) {
+                        organizations.add(organization);
+                        organization = null;
+                    }
                     continue;
+                }else if (name.equals("end")){
+                    name=exParam[i+1];
+                    i+=1;
                 }
                 url = exParam[i + 1];
                 if (exParam[i + 2] != null && !exParam[i + 2].equals("")) {
@@ -131,9 +159,16 @@ public class ResumeServlet extends HttpServlet {
                 title = exParam[i + 4];
                 description = exParam[i + 5];
                 if (name.trim().length() != 0 && startTime != null && title != null && !title.isEmpty()) {
-                    organizations.add(new Organization(name, url, startTime, endTime, title, description));
+                    organization = new Organization(new Link(name, url));
+                    organization.addPeriodPosition(new Organization.Period(title, startTime, endTime, description));
+                }
+                i += 6;
+                if (exParam[i].equals("end")) {
+                    organizations.add(organization);
+                    organization = null;
                 }
             }
+        }
 
         if (!organizations.isEmpty()) {
             OrganizationSection organizationSection = new OrganizationSection(organizations);

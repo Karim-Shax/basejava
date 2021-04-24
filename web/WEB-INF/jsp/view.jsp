@@ -24,15 +24,18 @@
     <h2>${resume.fullName}&nbsp;<a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></h2>
     <p>
         <c:forEach var="contactEntry" items="${resume.contacts}">
+            <c:if test="${contactEntry.key.name()=='GITHUB'}">
+                <img src="img/gh.png">
+            </c:if>
+            <c:if test="${contactEntry.key.name()=='STACKOVERFLOW'}">
+                <img src="img/so.png">
+            </c:if>
+            <c:if test="${contactEntry.key.name()=='LINKEDIN'}">
+                <img src="img/lin.png">
+            </c:if>
             <jsp:useBean id="contactEntry"
                          type="java.util.Map.Entry<com.urise.webapp.model.ContactType, java.lang.String>"/>
-            <c:if test="${(contactEntry.key.name()=='PHONE')||(contactEntry.key.name()=='EMAIL')||(contactEntry.key.name()=='SKYPE')}">
-                <%=contactEntry.getKey().name()%> <a href="${contactEntry.getValue()}"><%=contactEntry.getValue()%></a>
-            </c:if>
-            <c:if test="${(contactEntry.key.name()=='LINKEDIN')||(contactEntry.key.name()=='STACKOVERFLOW')||(contactEntry.key.name()=='GITHUB')}">
-                <a href=<%=contactEntry.getValue()%>><%=contactEntry.getKey().name()%></a>
-            </c:if>
-            <br/>
+            <%=contactEntry.getKey().toHtml(contactEntry.getValue())%><br/>
         </c:forEach>
     </p>
     <table cellpadding="2">
@@ -65,10 +68,10 @@
             <c:if test="${(Entry.key.name()=='EXPERIENCE')||(Entry.key.name()=='EDUCATION')}">
                 <c:forEach var="organization" items="${Entry.value.getDetail()}">
                     <tr>
-                        <td colspan="2">
-                            <h5>
+                        <td>
+                            <h4>
                                 <a href="${organization.getHomePage().getUrl()}"><c:out value="${organization.getHomePage().getTitle()}"/></a>
-                            </h5>
+                            </h4>
                         </td>
                     </tr>
                     <c:forEach var="period" items="${organization.getList()}">
@@ -81,9 +84,7 @@
                                 <em>
                                     <c:out value="${period.title}"/>
                                     <c:out value="${period.getTechnoLogyNameVersion()}" />
-
                                 </em>
-                                <br>
                             </td>
                         </tr>
                     </c:forEach>
