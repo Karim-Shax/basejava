@@ -24,15 +24,6 @@
     <h2>${resume.fullName}&nbsp;<a href="resume?uuid=${resume.uuid}&action=edit"><img src="img/pencil.png"></a></h2>
     <p>
         <c:forEach var="contactEntry" items="${resume.contacts}">
-            <c:if test="${contactEntry.key.name()=='GITHUB'}">
-                <img src="img/gh.png">
-            </c:if>
-            <c:if test="${contactEntry.key.name()=='STACKOVERFLOW'}">
-                <img src="img/so.png">
-            </c:if>
-            <c:if test="${contactEntry.key.name()=='LINKEDIN'}">
-                <img src="img/lin.png">
-            </c:if>
             <jsp:useBean id="contactEntry"
                          type="java.util.Map.Entry<com.urise.webapp.model.ContactType, java.lang.String>"/>
             <%=contactEntry.getKey().toHtml(contactEntry.getValue())%><br/>
