@@ -32,8 +32,6 @@ public class ResumeServlet extends HttpServlet {
             response.sendRedirect("resume");
             return;
         }
-
-        System.out.println(uuid);
         if (!uuid.equals("new") && !uuid.equals("")) {
             r = new Resume(uuid, fullName);
             updateResume(request, r);
@@ -57,8 +55,6 @@ public class ResumeServlet extends HttpServlet {
         }
         r.addSection(SectionType.PERSONAL, new TextSection(request.getParameter("PERSONAL")));
         r.addSection(SectionType.OBJECTIVE, new TextSection(request.getParameter("OBJECTIVE")));
-        System.out.println(r.getSection(SectionType.PERSONAL));
-        System.out.println(r.getSection(SectionType.OBJECTIVE));
         addListAndTextSection(request, SectionType.ACHIEVEMENT, r);
         addListAndTextSection(request, SectionType.QUALIFICATIONS, r);
         addOrUpdateResume(r, request, SectionType.EDUCATION);
