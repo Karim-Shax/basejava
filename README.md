@@ -16,4 +16,6 @@
      - в облачный сервис [Heroku](https://ru.wikipedia.org/wiki/Heroku)
 
  [Приложение на Heroku](https://dataresume.herokuapp.com/resume)
+ 
+ 
  [Сертификат об окончаний Basejava](https://javaops.ru/certificate/basejava?email=karim.shaxa97@gmail.com)
