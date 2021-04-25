@@ -73,8 +73,9 @@
                             </td>
                             <td>
                                 <em>
-                                    <c:out value="${period.title}"/>
-                                    <c:out value="${period.getTechnoLogyNameVersion()}" />
+                                    <b><c:out value="${period.title}"/></b>
+                                    </br>
+                                    <p>${period.getTechnoLogyNameVersion()}</p>
                                 </em>
                             </td>
                         </tr>

@@ -3,7 +3,6 @@ package com.urise.webapp.sql;
 import com.urise.webapp.storage.SqlStorage;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -17,14 +16,14 @@ public class Config {
     private String password;
 
     private Config() {
-        try (InputStream inputStream = new FileInputStream("D:/base/basejava/config/resumes.properties")) {
+        try (InputStream inputStream = Config.class.getResourceAsStream("/resumes.properties")) {
             properties.load(inputStream);
             storageDir = new File(properties.getProperty("storage.dir"));
             url = properties.getProperty("db.url");
             name = properties.getProperty("db.username");
             password = properties.getProperty("db.password");
         } catch (IOException e) {
-            throw new IllegalArgumentException(e);
+            throw new IllegalArgumentException(e+" "+properties);
         }
     }
 

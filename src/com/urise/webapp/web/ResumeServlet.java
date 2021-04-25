@@ -54,8 +54,8 @@ public class ResumeServlet extends HttpServlet {
                 r.getContacts().remove(type);
             }
         }
-        addListAndTextSection(request,SectionType.PERSONAL,r);
-        addListAndTextSection(request,SectionType.OBJECTIVE,r);
+        addListAndTextSection(request, SectionType.PERSONAL, r);
+        addListAndTextSection(request, SectionType.OBJECTIVE, r);
         addListAndTextSection(request, SectionType.ACHIEVEMENT, r);
         addListAndTextSection(request, SectionType.QUALIFICATIONS, r);
         addOrUpdateResume(r, request, SectionType.EDUCATION);
@@ -77,10 +77,6 @@ public class ResumeServlet extends HttpServlet {
         switch (action) {
             case "delete":
                 storage.delete(uuid);
-                response.sendRedirect("resume");
-                return;
-            case "clear":
-                storage.clear();
                 response.sendRedirect("resume");
                 return;
             case "view":
@@ -117,7 +113,7 @@ public class ResumeServlet extends HttpServlet {
         if (exParam != null) {
             for (int i = 0; i < exParam.length; ) {
                 name = exParam[i];
-                if (i == exParam.length - 1||name==null||name.equals("")) {
+                if (i == exParam.length - 1 || name == null || name.equals("")) {
                     break;
                 }
                 if (organization != null && !exParam[i].equals("end")) {
@@ -132,7 +128,7 @@ public class ResumeServlet extends HttpServlet {
                     title = exParam[i + 2];
                     description = exParam[i + 3];
                     if (startTime != null && title != null && !title.isEmpty()) {
-                        organization.addPeriodPosition(new Organization.Period(title, startTime, endTime, description));
+                        organization.addPeriodPosition(new Organization.Period(title, startTime, endTime, textView(description)));
                         i += 4;
                     }
                     if (exParam[i].equals("end")) {
@@ -157,7 +153,7 @@ public class ResumeServlet extends HttpServlet {
                 description = exParam[i + 5];
                 if (name.trim().length() != 0 && startTime != null && title != null && !title.isEmpty()) {
                     organization = new Organization(new Link(name, url));
-                    organization.addPeriodPosition(new Organization.Period(title, startTime, endTime, description));
+                    organization.addPeriodPosition(new Organization.Period(title + "\n", startTime, endTime, textView(description)));
                 }
                 i += 6;
                 if (exParam[i].equals("end")) {
@@ -166,7 +162,6 @@ public class ResumeServlet extends HttpServlet {
                 }
             }
         }
-
         if (!organizations.isEmpty()) {
             OrganizationSection organizationSection = new OrganizationSection(organizations);
             r.addSection(type, organizationSection);
@@ -193,5 +188,18 @@ public class ResumeServlet extends HttpServlet {
                 }
             }
         }
+    }
+
+    private String textView(String str) {
+        StringBuilder builder=new StringBuilder();
+        int strLen=70;
+        for (int i=0;i<str.length();i++) {
+            builder.append(str.charAt(i));
+            if (i==strLen){
+                builder.append("\n");
+                strLen+=70;
+            }
+        }
+        return builder.toString();
     }
 }
